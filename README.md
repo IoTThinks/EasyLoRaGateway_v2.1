@@ -12,10 +12,10 @@ From top
 ![easy lora gateway - top](https://user-images.githubusercontent.com/29994971/50210449-bf46fb80-03a8-11e9-8eb9-035934536fb1.JPG)
 
 From bottom
-![Easy LoRa v2 1 - bottom](https://user-images.githubusercontent.com/29994971/63232975-fb43a080-c256-11e9-8285-0388fb5b3f19.JPG)
+![Easy LoRa v2 1 - bottom](https://user-images.githubusercontent.com/29994971/63233301-ace3d100-c259-11e9-9a7b-c0d4757752c0.JPG)
 
 From inside
-![Easy LoRa v2 1 - inside](https://user-images.githubusercontent.com/29994971/63232978-fe3e9100-c256-11e9-8161-712da492a2e6.JPG)
+![Easy LoRa v2 1 - inside](https://user-images.githubusercontent.com/29994971/63233300-ace3d100-c259-11e9-8989-f151fbd00a25.JPG)
 
 ## 2. Software feature (In progress)
 - Single or dual channel LoRa gateway
