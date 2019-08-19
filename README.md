@@ -10,7 +10,7 @@ Previous version:
 
 ## 1. Appearance 
 From top
-![easy lora gateway - top](https://user-images.githubusercontent.com/29994971/50210449-bf46fb80-03a8-11e9-8eb9-035934536fb1.JPG)
+![Easy LoRa Gateway - Top](https://user-images.githubusercontent.com/29994971/63238055-d5c29100-c26e-11e9-8cbc-09ef7bee3845.JPG)
 
 From bottom
 ![Easy LoRa v2 1 - bottom](https://user-images.githubusercontent.com/29994971/63233301-ace3d100-c259-11e9-9a7b-c0d4757752c0.JPG)
