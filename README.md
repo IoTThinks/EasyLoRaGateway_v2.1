@@ -14,7 +14,7 @@ From top
 From bottom
 ![Easy LoRa v2 1 - bottom](https://user-images.githubusercontent.com/29994971/63232975-fb43a080-c256-11e9-8285-0388fb5b3f19.JPG)
 
-From inside (2-chip version)
+From inside
 ![Easy LoRa v2 1 - inside](https://user-images.githubusercontent.com/29994971/63232978-fe3e9100-c256-11e9-8161-712da492a2e6.JPG)
 
 ## 2. Software feature (In progress)
@@ -39,7 +39,7 @@ From inside (2-chip version)
 
 ## 4. Pin mappings
 Pin mappings from modules to main ESP32
-![image](https://user-images.githubusercontent.com/29994971/50145382-04552a00-02e4-11e9-8f4d-fa9508a38ff0.png)
+![Easy LoRa Gateway v2 1 - Pin mapping](https://user-images.githubusercontent.com/29994971/63233171-c59fb700-c258-11e9-8842-81c59109e307.png)
 
 ## 5. Pinout of RA-01
 ![image](https://user-images.githubusercontent.com/29994971/60634264-8fd57900-9e38-11e9-8ed0-cd51df3bb879.png)
