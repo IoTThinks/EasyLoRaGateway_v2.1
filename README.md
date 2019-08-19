@@ -4,8 +4,9 @@ Easy LoRa gateway connects multiple smart IoT Plugs and Nodes in large buildings
 - Homepage: http://iotthinks.com/easy-lora-gateway/
 - Full Wiki: https://github.com/IoTThinks/EasyLoRaGateway_v2/wiki
 
-Old version of Easy LoRa gateway v1 is at https://github.com/IoTThinks/EasyLoraGateway
-Old version of Easy LoRa gateway v2 is at https://github.com/IoTThinks/EasyLoRaGateway_v2
+Previous version:
+- Old version of Easy LoRa gateway v1 is at https://github.com/IoTThinks/EasyLoraGateway
+- Old version of Easy LoRa gateway v2 is at https://github.com/IoTThinks/EasyLoRaGateway_v2
 
 ## 1. Appearance 
 From top
