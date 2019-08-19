@@ -42,8 +42,8 @@ From inside
 Pin mappings from modules to main ESP32
 ![Easy LoRa Gateway v2 1 - Pin mapping](https://user-images.githubusercontent.com/29994971/63233171-c59fb700-c258-11e9-8842-81c59109e307.png)
 
-## 5. Pinout of RA-01
-![image](https://user-images.githubusercontent.com/29994971/60634264-8fd57900-9e38-11e9-8ed0-cd51df3bb879.png)
+## 5. Pinout of RA-02
+![ra-02](https://user-images.githubusercontent.com/29994971/63237606-e07c2680-c26c-11e9-81fe-7d4bf97f237a.png)
 
 ## 6. Pinout of ESP32
 ![image](https://user-images.githubusercontent.com/29994971/60634413-07a3a380-9e39-11e9-86dd-2acc5d586cae.png)
