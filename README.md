@@ -1,4 +1,4 @@
-# EasyLoRaGateway_v2.1 - PRODUCTION VERSION
+# EasyLoRaGateway_v2.1
 Easy LoRa gateway connects multiple smart IoT Plugs and Nodes in large buildings, factories and farms up to 10 km from the nearest Internet access. Easy LoRa gateway uses LoRa as the transmission protocol via 433 Mhz wave. It enables us to remotely control our smart IoT Plugs and Nodes inexpensively and efficiently.
 - A 10-storey building only needs 01 Easy LoRa gateway to connects to all LoRa Plugs and sensors in the building. A 10-hectare farm may only needs 01 LoRa Gateway to reach all of its IoT devices.
 - Homepage: http://iotthinks.com/easy-lora-gateway/
@@ -12,10 +12,10 @@ From top
 ![easy lora gateway - top](https://user-images.githubusercontent.com/29994971/50210449-bf46fb80-03a8-11e9-8eb9-035934536fb1.JPG)
 
 From bottom
-![easy lora gw 4](https://user-images.githubusercontent.com/29994971/50210453-c2da8280-03a8-11e9-86e1-85d0f9f97176.jpg)
+![Easy LoRa v2 1 - bottom](https://user-images.githubusercontent.com/29994971/63232975-fb43a080-c256-11e9-8285-0388fb5b3f19.JPG)
 
 From inside (2-chip version)
-![easy lora gw 3](https://user-images.githubusercontent.com/29994971/50210456-c4a44600-03a8-11e9-9652-def4faf8427f.jpg)
+![Easy LoRa v2 1 - inside](https://user-images.githubusercontent.com/29994971/63232978-fe3e9100-c256-11e9-8161-712da492a2e6.JPG)
 
 ## 2. Software feature (In progress)
 - Single or dual channel LoRa gateway
