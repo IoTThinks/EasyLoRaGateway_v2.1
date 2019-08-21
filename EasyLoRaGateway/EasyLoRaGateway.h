@@ -26,6 +26,10 @@ unsigned int reset_times;
 // Must be after #define
 #include <ETH.h>
 
+// WiFi
+#include <WiFi.h>
+const char* ssid     = "Easy LoRa";
+const char* password = "EasyLoRa123";
 // =====================
 // MQTT
 // =====================

@@ -21,27 +21,33 @@ void setupMQTT() {
   mqttClient.begin(mqttBrokerServer, netClient);
   mqttClient.onMessage(mqttMessageReceived);
 
+  // Only connect to MQTT when there is a message to MQTT server
   connectToMQTT();
 }
 
 void connectToMQTT() {
-  while (!eth_connected) {
-    Serial.println("[MQTT] ETH not connected. Try to reconnect ETH shortly.");
-    delay(5000);
-    setupEthernet();    
+  // check network
+  if(!eth_connected && !wifi_connected) {
+    Serial.println("[MQTT] ETH and WiFi not connected. Reconnecting...");    
   }
-
-  while (!mqttClient.connect(mqttNamespace, mqttUsername, mqttSecret)) {
-    Serial.println("[MQTT] MQTT not connected. Try to reconnect to MQTT.");
+  else
+  {
+    Serial.println("[MQTT] Connecting to MQTT...");
+    mqttClient.connect(mqttNamespace, mqttUsername, mqttSecret);  
     delay(1000);
   }
 
-  Serial.println("[MQTT] Connected to MQTT.");
-  MQTT_Status = "OK";
-  
-  // mqttClient.subscribe("/hello");
-  mqttClient.subscribe("/iotthinks/easyloragateway/nodes/to/ota");
-  // mqttClient.unsubscribe("/hello");
+  if(mqttClient.connected())
+  {
+    Serial.println("[MQTT] Connected to MQTT.");
+    MQTT_Status = "Connected";
+    mqttClient.subscribe("/iotthinks/easyloragateway/nodes/to/ota");
+  }
+  else
+  {
+    Serial.println("[MQTT] Not connected to MQTT.");
+    MQTT_Status = "Not connected";
+  }
 }
 
 void mqttMessageReceived(String &topic, String &payload) {

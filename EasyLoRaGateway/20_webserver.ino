@@ -11,7 +11,10 @@ int charcount=0;
 void setupWebServer() {
   // Can not get if starts OK
   webServer.begin();
-  Serial.println("[WEBSERVER] Web server should be at http://" + ETH_Ip);
+  if(eth_connected == true)
+    Serial.println("[WEBSERVER] Web server should be at http://" + ETH_Ip);
+  else
+    Serial.println("[WEBSERVER] Web server should be at http://" + WiFi_Ip);
   WEBSERVER_Status = "OK";
 }
 
@@ -45,7 +48,8 @@ void runWebServer() {
           webClient.println("<body style=\"background-color:lightblue;\">");
           webClient.println("<h1>Easy LoRa Gateway</h1>");
           webClient.println("<h2>1. Basic Information</h2>");
-          webClient.println("<p>LAN Status: " + ETH_Status + "</p>");
+          webClient.println("<p>Ethernet Status: " + ETH_Status + "</p>");
+          webClient.println("<p>WiFi Status: " + WiFi_Status + "</p>");
           webClient.println("<p>LoRa 1 Status: " + LORA_Status + "</p>");
           webClient.println("<p>LoRa 2 Status: " + LORA2_Status + "</p>");
           webClient.println("<p>MQTT Status: " + MQTT_Status + "</p>");

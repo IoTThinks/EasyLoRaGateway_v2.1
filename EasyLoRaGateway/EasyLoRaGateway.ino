@@ -13,7 +13,8 @@ void setup() {
   setupSpeaker();
   //setupFileSystem();
   setupEthernet();
-  //delay(1000);
+  setupWiFi();
+  delay(5000);
   setupMQTT();
   setupLoRa();  
   setupLoRa2(); 
