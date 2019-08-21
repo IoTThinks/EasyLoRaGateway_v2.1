@@ -39,6 +39,9 @@ void loop() {
   
   // TODO: When to accept OTA update?
   //waitingForOTA();
+
+  // Test ThingsBoard
+  uploadTelemetryData();
 }
 
 // Need to flush buffer to send or receive MQTT messages
