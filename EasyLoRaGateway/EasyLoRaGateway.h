@@ -1,20 +1,22 @@
 // ===================================================
 // Put all pin mappings and library here
 // ===================================================
+// =====================
 // Serial
+// =====================
 #define BAUD_RATE 115200 //9600
 
-// Filesystem
-#include "FS.h"
-#include "SPIFFS.h"
-
+// =====================
 // Preferences
+// =====================
 #include <Preferences.h>
 /* create an instance of Preferences library */
 Preferences preferences;
 unsigned int reset_times;
 
+// =====================
 // Ethernet
+// =====================
 #define ETH_PHY_MDIO 0
 #define ETH_PHY_ADDR 1
 #define ETH_PHY_MDC 16
@@ -26,17 +28,20 @@ unsigned int reset_times;
 // Must be after #define
 #include <ETH.h>
 
+// =====================
 // WiFi
+// =====================
 #include <WiFi.h>
 const char* ssid     = "Easy LoRa";
 const char* password = "EasyLoRa123";
+
 // =====================
 // MQTT
 // =====================
 #include <MQTT.h>
 
 // =====================
-// LoRa
+// LoRa 1 and 2
 // =====================
 #include <SPI.h>
 #include <LoRa.h>
@@ -61,32 +66,57 @@ const char* password = "EasyLoRa123";
 #define LORA_FEQ 433E6
 #define LORA_SF 12 // 7 is the fastest. 12 is is farthest
 #define LORA_CR 5
-#define LORA_BW 41.7E3 //31.25E3 // 41.7E3 //125E3
+#define LORA_BW 125E3 //31.25E3 // 41.7E3 //125E3
 #define LORA_PREAMBLE_LENGTH  8
 
 // LoRa 2 signal configuration
-#define LORA2_FEQ 470E6
+#define LORA2_FEQ 433E6
 #define LORA2_SF 12 // 7 is the fastest. 12 is is farthest
 #define LORA2_CR 5
 #define LORA2_BW 41.7E3 //31.25E3 // 41.7E3 //125E3
 #define LORA2_PREAMBLE_LENGTH  8
+
 // =====================
 // OTA
 // =====================
 #include <ArduinoOTA.h>
 
+// =====================
 // LED
+// =====================
 #define LED 14
 
+// =====================
 // Button
+// =====================
 #define BTN 35
+volatile bool isBtnPressed = false;
 
+// =====================
 // Speaker
+// =====================
 #define SPK 12
 #define SPK_CHANNEL 0
 #define SPK_FREQ  800
 #define SPK_RESOLUTION  8
 
+// =====================
 // GPIOs
+// =====================
 #define IO2 2
 #define IO4 4
+
+// =====================
+// ThingsBoard
+// =====================
+#define TB_HOST "easylora.vn"
+#define TB_PORT 80
+
+// =====================
+// Utils
+// =====================
+#include <ArduinoJson.h>
+struct IoTMessage {
+  String src;
+  String telemetry;  
+};

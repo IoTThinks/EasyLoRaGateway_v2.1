@@ -1,29 +1,26 @@
-int temp = 1;
-int humid = 1;
+// =====================
+// ThingsBoard
+// =====================
   
-void uploadTelemetryData()
+void uploadTelemetryData(String src, String telemetry)
 {
-  WiFiClient client;
-  const int httpPort = 80;
-  if (!client.connect("portal.iotthinks.com", httpPort)) {
-    Serial.println("connection failed");
+  WiFiClient client;  
+  if (!client.connect(TB_HOST, TB_PORT)) {
+    Serial.println("[TB] Connection to ThingsBoard failed");
     return;
   }
 
-  temp++;
-  humid++;
-  String data = "{temp:" + (String) temp + ", humid:" + (String) humid + "}";
-
-  Serial.print("Requesting POST: ");
-  // Send request to the server:
-  client.println("POST /api/v1/A1_TEST_TOKEN/telemetry HTTP/1.1");
-  client.println("Host: portal.iotthinks.com");
+  Serial.print("[TB] Sending POST request. ");
+  
+  // Send request to the server with "src" as secret key and "telemetry" as data
+  client.println("POST /api/v1/" + src + "/telemetry HTTP/1.1");
+  client.println("Host: " + String(TB_HOST));
   client.println("Accept: */*");
   client.println("Content-Type: application/json");
   client.print("Content-Length: ");
-  client.println(data.length());
+  client.println(telemetry.length());
   client.println();
-  client.print(data);
+  client.print(telemetry);
   
   delay(500); // Can be changed
   
@@ -31,6 +28,6 @@ void uploadTelemetryData()
     client.stop();  // DISCONNECT FROM THE SERVER
   }
   Serial.println();
-  Serial.println("closing connection");
+  Serial.println("[TB] Closed connection to ThingsBoard");
   delay(5000);
 }

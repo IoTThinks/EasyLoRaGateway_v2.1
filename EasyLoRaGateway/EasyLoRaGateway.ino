@@ -7,10 +7,11 @@
 // This runs once when the gateway boots. 
 // The delay is not neccessary and just to avoid component re-initizalized by other compopents.
 // setupXXX functions are placed in module files
-void setup() {      
+void setup() {
   setupLED();  
   setupSerial();
   setupSpeaker();
+  setupButton();
   //setupFileSystem();
   setupEthernet();
   setupWiFi();
@@ -22,26 +23,21 @@ void setup() {
   //delay(10000);
   //setupOTA();
   //delay(1000);
-  //setupPreferences();   
-
-  // Done setup
-  displayLEDErrorCode();
-  onLED();
-  onOffSpeaker(1, false);
+  //setupPreferences();
 }
 
 // Do the real works here
-void loop() {  
+void loop() {
   // Working
   receiveAndForwardLoRaMessage();
   processMQTTMessages();
   runWebServer();
+
+  // User presses button for action
+  //performUserAction();
   
   // TODO: When to accept OTA update?
-  //waitingForOTA();
-
-  // Test ThingsBoard
-  uploadTelemetryData();
+  //waitingForOTA();  
 }
 
 // Need to flush buffer to send or receive MQTT messages
@@ -54,19 +50,32 @@ void processMQTTMessages() {
 void receiveAndForwardLoRaMessage(){
   // For LoRa 1
   String message = receiveLoRaMessage();
-  if(message != ""){    
+  if(message != ""){   
+    Serial.println("[LoRa 1] Received message: " + message);
+    // Send to MQTT
     forwardNodeMessageToMQTT(message);
-    dataReceivedLED();
-  }
 
-  delay(50);
+    // Send data to ThingsBoard
+    IoTMessage tbMessage = getIoTMessage("{" + message + "}");
+    uploadTelemetryData(tbMessage.src, tbMessage.telemetry);  
+    blinkOffLED();
+  }
   
+  delay(50);
+
   // For LoRa 2
   String message2 = receiveLoRa2Message();
-  if(message2 != ""){    
+  if(message2 != ""){
+    Serial.println("[LoRa 2] Received message: " + message2);
+    
+    // Send to MQTT
     forwardNodeMessageToMQTT(message2);
-    dataReceivedLED();
+
+    // Send data to ThingsBoard
+    IoTMessage tbMessage2 = getIoTMessage("{" + message2 + "}");
+    uploadTelemetryData(tbMessage2.src, tbMessage2.telemetry);  
+    blinkOffLED();
   }
 
-  delay(50);
+  delay(50);  
 }

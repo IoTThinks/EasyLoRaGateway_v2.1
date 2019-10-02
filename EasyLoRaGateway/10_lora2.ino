@@ -88,9 +88,9 @@ String receiveLoRa2Message() {
   */
 
   // Added LoRa signal quality
-  incoming = "RSSI:" + String(LoRa2.packetRssi()) +
-             " | SNR:" + String(LoRa2.packetSnr()) + 
-             " | " + incoming;
+  incoming = "\"rssi\":" + String(LoRa2.packetRssi()) +
+             ",\"snr\":" + String(LoRa2.packetSnr()) + 
+             "," + incoming;
   
   LORA2_Lastreceived_Msg = incoming;
   return incoming;
