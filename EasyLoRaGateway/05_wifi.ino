@@ -8,7 +8,8 @@ void setupWiFi()
   WiFi_hostname = getHostname("WiFi");
   WiFi.setHostname(string2Char(WiFi_hostname));
   WiFi.begin(ssid, password);
-  Serial.println("[WiFi] Connecting to WiFi...");
+  WiFi.setSleep(false); // Do not sleep
+  log("[WiFi] Connecting to WiFi...");
 }
 
 // Beep one and on LED and set ETH or WiFi to "Connected"
@@ -29,7 +30,7 @@ void setNetworkConnectedStatus(String type)
   }
   else
   {
-      Serial.println("[ETH_WIFI] Unknown NIC type");
+      log("[ETH_WIFI] Unknown NIC type");
   }
 }
 
@@ -51,13 +52,13 @@ void setNetworkDisconnectedStatus(String type)
   }
   else
   {
-      Serial.println("[ETH_WIFI] Unknown NIC type");
+      log("[ETH_WIFI] Unknown NIC type");
   }
 }
 
 void disconnectWiFi()
 {
-  Serial.println("[WiFi] Disconnecting WiFi...");
+  log("[WiFi] Disconnecting WiFi...");
   WiFi.disconnect(true);  
 }
 
@@ -70,13 +71,13 @@ void WiFiEvent(WiFiEvent_t event)
     // Ethernet
     // ===============================
     case SYSTEM_EVENT_ETH_START:
-      Serial.println("[ETH] ETH Started");
+      log("[ETH] ETH Started");
       ETH_hostname = getHostname("ETH");
       ETH.setHostname(string2Char(ETH_hostname));
-      Serial.println("[ETH] Hostname: " + ETH_hostname);      
+      log("[ETH] Hostname: " + ETH_hostname);      
       break;
     case SYSTEM_EVENT_ETH_CONNECTED:
-      Serial.println("[ETH] ETH Connected. No IP.");
+      log("[ETH] ETH Connected. No IP.");
       ETH_Status = "Connected. No IP Yet";
       break;
     case SYSTEM_EVENT_ETH_GOT_IP:
@@ -85,37 +86,42 @@ void WiFiEvent(WiFiEvent_t event)
       setNetworkDisconnectedStatus("WiFi");   
          
       ETH_Ip = ETH.localIP().toString();
-      Serial.println("[ETH] ETH connected. IP address: " + ETH_Ip);
-      setNetworkConnectedStatus("ETH");     
+      log("[ETH] ETH connected. IP address: " + ETH_Ip);
+      setNetworkConnectedStatus("ETH");
+      
+      // Reconnect MQTT when wifi is reconnected
+      setupMQTT();
+      // connectToMQTT();
+      
       break;
     case SYSTEM_EVENT_ETH_DISCONNECTED:
-      Serial.println("[ETH] ETH Disconnected");
+      log("[ETH] ETH Disconnected");
       setNetworkDisconnectedStatus("ETH");
 
       // Reconnect via Wifi as backup
       setupWiFi();
       break;
     case SYSTEM_EVENT_ETH_STOP:
-      Serial.println("[ETH] ETH Stopped");
+      log("[ETH] ETH Stopped");
       setNetworkDisconnectedStatus("ETH");
       break;
     // ===============================
     // WiFi
     // ===============================
     case SYSTEM_EVENT_STA_START:
-      Serial.println("[WiFi] WiFi station start");
+      log("[WiFi] WiFi station start");
       break;
     case SYSTEM_EVENT_STA_STOP:
-      Serial.println("[WiFi] WiFi station stopped");
+      log("[WiFi] WiFi station stopped");
       break;  
     case SYSTEM_EVENT_STA_CONNECTED:
-      Serial.println("[WiFi] WiFi station connected to AP");
+      log("[WiFi] WiFi station connected to AP");
       break;
     case SYSTEM_EVENT_AP_START:
-      Serial.println("[WiFi] WiFi AP started");
+      log("[WiFi] WiFi AP started");
       break;   
     case SYSTEM_EVENT_WIFI_READY:
-      Serial.println("[WiFi] WiFi ready");
+      log("[WiFi] WiFi ready");
       break;     
     case SYSTEM_EVENT_STA_GOT_IP:
       // Disconnect if ETH is connected with IP
@@ -128,18 +134,22 @@ void WiFiEvent(WiFiEvent_t event)
       {
         Serial.print("[WiFi] WiFi connected. ");
         WiFi_Ip = WiFi.localIP().toString();
-        Serial.println("IP address: " + WiFi_Ip);        
+        log("[WiFi] IP address: " + WiFi_Ip);        
         setNetworkConnectedStatus("WiFi");
+
+        // Reconnect MQTT when wifi is reconnected
+        setupMQTT();
+        // connectToMQTT();
       }
       break;
     case SYSTEM_EVENT_STA_DISCONNECTED:
     case SYSTEM_EVENT_STA_LOST_IP:
-      Serial.println("[WiFi] WiFi lost connection. Reconnecting...");      
+      log("[WiFi] WiFi lost connection. Reconnecting...");      
       setNetworkDisconnectedStatus("WiFi");
       WiFi.reconnect();
       break;
     default:      
-      Serial.println("[ETH_WiFi] Unhandled ETH_WiFi event code: " + (String) event);      
+      log("[ETH_WiFi] Unhandled ETH_WiFi event code: " + (String) event);      
       break;
   }
 }

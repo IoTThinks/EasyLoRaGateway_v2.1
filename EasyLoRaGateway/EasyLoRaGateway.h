@@ -36,9 +36,13 @@ const char* ssid     = "Easy LoRa";
 const char* password = "EasyLoRa123";
 
 // =====================
-// MQTT
+// Bluetooth
 // =====================
-#include <MQTT.h>
+#include "BluetoothSerial.h"
+#include "esp_bt.h"
+// Bluetooth Serial object
+BluetoothSerial SerialBT;
+bool isBTConnected = false;
 
 // =====================
 // LoRa 1 and 2
@@ -73,7 +77,7 @@ const char* password = "EasyLoRa123";
 #define LORA2_FEQ 433E6
 #define LORA2_SF 12 // 7 is the fastest. 12 is is farthest
 #define LORA2_CR 5
-#define LORA2_BW 41.7E3 //31.25E3 // 41.7E3 //125E3
+#define LORA2_BW 125E3 //31.25E3 // 41.7E3 //125E3
 #define LORA2_PREAMBLE_LENGTH  8
 
 // =====================
@@ -107,16 +111,48 @@ volatile bool isBtnPressed = false;
 #define IO4 4
 
 // =====================
+// MQTT
+// =====================
+#include <MQTT.h>
+#define MQTT_KEEP_ALIVE 5 // int, in seconds
+#define MQTT_CLEAN_SESSION false // bool, resuse existing session
+#define MQTT_TIMEOUT 15000 // int, in miliseconds
+
+#define MQTT_SERVER "easylora.vn"
+#define MQTT_PORT 1883
+
+#define MQTT_USERNAME "8nVPtDK5o5qdDJuSCG1Z" // Authentication code
+#define MQTT_SECRET "8nVPtDK5o5qdDJuSCG1Z" // Any non-empty code is valid for ThingsBoard MQTT
+
+// Publish to inform device is connected to the Gateway
+#define MQTT_API_CONNECT "v1/gateway/connect"
+#define MQTT_API_DISCONNECT "v1/gateway/disconnect"
+
+// Publish and subscribe to attribute updates from the server
+#define MQTT_API_ATTRIBUTE "v1/gateway/attributes"
+
+// Publish to get client-side or shared attribute specific values from the server
+// Subscribe before publish
+#define MQTT_API_ATTRIBUTE_RESPONSE "v1/gateway/attributes/response"
+#define MQTT_API_ATTRIBUTE_REQUEST "v1/gateway/attributes/request"
+
+// Publish device telemetry
+#define MQTT_API_TELEMETRY "v1/gateway/telemetry"
+
+// Subscribe to RPC commands 
+#define MQTT_API_RPC "v1/gateway/rpc"
+// =====================
 // ThingsBoard
 // =====================
 #define TB_HOST "easylora.vn"
 #define TB_PORT 80
+#define TB_HTTP_TIMEOUT 10000 // In ms
 
 // =====================
 // Utils
 // =====================
 #include <ArduinoJson.h>
-struct IoTMessage {
-  String src;
-  String telemetry;  
+struct EasyJsonPacket {
+  String src; // Device name
+  String telemetry;  // "attribute1":"value1", "attribute2": value2
 };

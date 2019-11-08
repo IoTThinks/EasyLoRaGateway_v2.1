@@ -10,28 +10,41 @@
 void setup() {
   setupLED();  
   setupSerial();
+  
+  //setupSerialBT();
+  printChipID();
+  
   setupSpeaker();
   setupButton();
   //setupFileSystem();
   setupEthernet();
   setupWiFi();
-  delay(5000);
-  setupMQTT();
+  //delay(5000);  
+  //setupMQTT(); <====== Triggered by ETH / WiFi event
   setupLoRa();  
-  setupLoRa2(); 
-  setupWebServer();
+  //setupLoRa2(); 
+  //setupWebServer();
   //delay(10000);
   //setupOTA();
   //delay(1000);
-  //setupPreferences();
+  //setupPreferences();  
+  //publishDeviceConnect("BCDDC2C31684");
+  //testTBJsson();
+
+  //testJson();
+  //getEasyJsonPacket(R"=====(src:"BCDDC2C31684","mb_temp":"error","s_smk":"error")=====");
 }
 
 // Do the real works here
-void loop() {
-  // Working
+void loop() {  
+  // Check heap mem
+  //log("esp_free_heap: " + String(esp_get_free_heap_size()) + 
+  //    ", free_min_heap: " + String(esp_get_minimum_free_heap_size()));
+  
+  // Working 
   receiveAndForwardLoRaMessage();
-  processMQTTMessages();
-  runWebServer();
+  sendAndReceiveMQTT();
+  //runWebServer();
 
   // User presses button for action
   //performUserAction();
@@ -40,42 +53,31 @@ void loop() {
   //waitingForOTA();  
 }
 
-// Need to flush buffer to send or receive MQTT messages
-void processMQTTMessages() {
-  // Send / receive from MQTT buffer
-  flushMQTTBuffer();
-}
-
 // Receive LoRa message and send to MQTT Server
 void receiveAndForwardLoRaMessage(){
   // For LoRa 1
   String message = receiveLoRaMessage();
   if(message != ""){   
-    Serial.println("[LoRa 1] Received message: " + message);
-    // Send to MQTT
-    forwardNodeMessageToMQTT(message);
-
+    log("[LoRa 1] <= Received message: " + message);
     // Send data to ThingsBoard
-    IoTMessage tbMessage = getIoTMessage("{" + message + "}");
-    uploadTelemetryData(tbMessage.src, tbMessage.telemetry);  
+    //publishToMQTT(MQTT_API_TELEMETRY, message);
+    processUplinkTBMessage(MQTT_API_TELEMETRY, message);
     blinkOffLED();
   }
-  
-  delay(50);
 
+  /*
   // For LoRa 2
   String message2 = receiveLoRa2Message();
   if(message2 != ""){
-    Serial.println("[LoRa 2] Received message: " + message2);
+    log("[LoRa 2] <= Received message: " + message2);
     
     // Send to MQTT
     forwardNodeMessageToMQTT(message2);
 
     // Send data to ThingsBoard
     IoTMessage tbMessage2 = getIoTMessage("{" + message2 + "}");
-    uploadTelemetryData(tbMessage2.src, tbMessage2.telemetry);  
+    uploadTelemetryData(tbMessage2.src, tbMessage2.telemetry);
     blinkOffLED();
   }
-
-  delay(50);  
+  */
 }

@@ -12,9 +12,9 @@ void setupWebServer() {
   // Can not get if starts OK
   webServer.begin();
   if(eth_connected == true)
-    Serial.println("[WEBSERVER] Web server should be at http://" + ETH_Ip);
+    log("[WEBSERVER] Web server should be at http://" + ETH_Ip);
   else
-    Serial.println("[WEBSERVER] Web server should be at http://" + WiFi_Ip);
+    log("[WEBSERVER] Web server should be at http://" + WiFi_Ip);
   WEBSERVER_Status = "OK";
 }
 
@@ -22,7 +22,7 @@ void runWebServer() {
   // listen for incoming clients
   WiFiClient webClient = webServer.available();
   if (webClient) {
-    Serial.println("[WEBSERVER] New webClient");
+    log("[WEBSERVER] New webClient");
     memset(linebuf,0,sizeof(linebuf));
     charcount=0;
     // an http request ends with a blank line
@@ -67,11 +67,11 @@ void runWebServer() {
           // you're starting a new line
           currentLineIsBlank = true;
           if (strstr(linebuf,"GET /ledon") > 0){
-            Serial.println("[WEBSERVER] LED ON");
+            log("[WEBSERVER] LED ON");
             onLED();
           }
           else if (strstr(linebuf,"GET /ledoff") > 0){
-            Serial.println("[WEBSERVER] LED OFF");
+            log("[WEBSERVER] LED OFF");
             offLED();
           }
          
@@ -90,6 +90,6 @@ void runWebServer() {
 
     // close the connection:
     webClient.stop();
-    Serial.println("[WEBSERVER] webClient disconnected");
+    log("[WEBSERVER] webClient disconnected");
   }
 }

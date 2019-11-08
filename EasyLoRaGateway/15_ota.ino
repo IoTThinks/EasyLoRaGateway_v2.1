@@ -4,7 +4,7 @@
 // ====================================
 
 void setupOTA() {
-  Serial.println("[OTA] Setup OTA");
+  log("[OTA] Setup OTA");
   
   // Port defaults to 3232
   // ArduinoOTA.setPort(3232);
@@ -28,26 +28,26 @@ void setupOTA() {
         type = "filesystem";
 
       // NOTE: if updating SPIFFS this would be the place to unmount SPIFFS using SPIFFS.end()
-      Serial.println("[OTA] Start updating " + type);
+      log("[OTA] Start updating " + type);
     })
     .onEnd([]() {
-      Serial.println("\n[OTA] End");
+      log("\n[OTA] End");
     })
     .onProgress([](unsigned int progress, unsigned int total) {
       Serial.printf("Progress: %u%%\r", (progress / (total / 100)));
     })
     .onError([](ota_error_t error) {
       Serial.printf("Error[%u]: ", error);
-      if (error == OTA_AUTH_ERROR) Serial.println("[OTA] Auth Failed");
-      else if (error == OTA_BEGIN_ERROR) Serial.println("[OTA] Begin Failed");
-      else if (error == OTA_CONNECT_ERROR) Serial.println("[OTA] Connect Failed");
-      else if (error == OTA_RECEIVE_ERROR) Serial.println("[OTA] Receive Failed");
-      else if (error == OTA_END_ERROR) Serial.println("[OTA] End Failed");
+      if (error == OTA_AUTH_ERROR) log("[OTA] Auth Failed");
+      else if (error == OTA_BEGIN_ERROR) log("[OTA] Begin Failed");
+      else if (error == OTA_CONNECT_ERROR) log("[OTA] Connect Failed");
+      else if (error == OTA_RECEIVE_ERROR) log("[OTA] Receive Failed");
+      else if (error == OTA_END_ERROR) log("[OTA] End Failed");
     });
 
   ArduinoOTA.begin();
 
-  Serial.println("[OTA} Ready");
+  log("[OTA} Ready");
 }
 
 void waitingForOTA() {

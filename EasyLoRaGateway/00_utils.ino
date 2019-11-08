@@ -1,4 +1,6 @@
-
+// ====================================
+// Hostname
+// ====================================
 char* string2Char(String str){
     if(str.length()!=0){
         char *p = const_cast<char*>(str.c_str());
@@ -36,9 +38,46 @@ String getHostname(String type)
   return "EG-" + macToStr(mac, false);
 }
 
-// ====================
+// ====================================
+// Chip ID
+// ====================================
+// To get chip ID, ESP32 will return mac address
+String getChipID()
+{
+  // Get default mac address
+  uint8_t chipid[6];
+  esp_efuse_mac_get_default (chipid);
+
+  // Format into uppercase mac address without :
+  // Eg: BCDDC2C31684
+  char returnStr[15];
+  snprintf(returnStr, 15, "%02X%02X%02X%02X%02X%02X",chipid[0], chipid[1], chipid[2], 
+            chipid[3], chipid[4], chipid[5]);
+  return returnStr;
+}
+
+// To get chip ID, ESP32 will return last 3 octets of mac address
+String getShortChipID()
+{  
+  // Get default mac address
+  uint8_t chipid[6];
+  esp_efuse_mac_get_default (chipid);
+
+  // Format into uppercase mac address without :
+  // Eg: BCDDC2C31684
+  char returnStr[9];
+  snprintf(returnStr, 9, "%02X%02X%02X", chipid[3], chipid[4], chipid[5]);
+  return returnStr;
+}
+
+void printChipID()
+{
+  log("[UTIL] Chip ID: " + String(getChipID()));
+}
+
+// ====================================
 // JSON
-// ====================
+// ====================================
 // Print json to string for printing
 String jsonToString(StaticJsonDocument<200> doc)
 {
@@ -48,47 +87,46 @@ String jsonToString(StaticJsonDocument<200> doc)
 }
 
 // Convert to Json Doc from string
-StaticJsonDocument<200> toJsonDoc(String jsonStr)
+StaticJsonDocument<200> toJsonDoc(const String& jsonStr)
 {  
+  //log("[UTIL] Parsing json string=" + jsonStr);
+  
   StaticJsonDocument<200> doc;
   DeserializationError error = deserializeJson(doc, jsonStr);
 
   // Test if parsing succeeds.
   if (error) {
-    Serial.print(F("deserializeJson() failed: "));
-    Serial.println(error.c_str());
+    log("[UTIL] Json parse failed.");
   }
-
+    
   return doc;
 }
 
 // Get Json Attribute value
-String getJsonAttValue(String attName, StaticJsonDocument<200> doc)
+String getJsonAttValue(StaticJsonDocument<200> doc, const String& attNameLevel1, const String& attNameLevel2, 
+                       const String& attNameLevel3)
 {
-  return doc[attName];
+  if(attNameLevel3 != "")
+    doc[attNameLevel1][attNameLevel2][attNameLevel2];
+  else if(attNameLevel2 != "")
+    return doc[attNameLevel1][attNameLevel2];
+  else
+    return doc[attNameLevel1];
 }
 
-String removeJsonAtt(String attName, StaticJsonDocument<200> doc)
+String removeJsonAtt(StaticJsonDocument<200> doc, const String& attName)
 {
   doc.remove(attName);
   return jsonToString(doc);
 }
 
-// Get IoT message from Json
-// Populate "src" and the remaining telemetry
-IoTMessage getIoTMessage(String jsonStr){
-  // Create Json document
-  StaticJsonDocument<200> doc = toJsonDoc(jsonStr);
-
-  // Get attribute
-  // Get "src" attribute
-  String src = getJsonAttValue("src", doc);
-  // Remove "src" and return the rest as telemetry
-  String telemetry = removeJsonAtt("src", doc); 
-  
-  // Create IoTMessage
-  IoTMessage iotMsg;
-  iotMsg.src = src;
-  iotMsg.telemetry = telemetry;
-  return iotMsg;
+void testJson()
+{
+  StaticJsonDocument<200> doc;
+  String controlWidgetMsg = R"=====({"device":"Device C","data":{"id":207,"method":"setP1","params":false}})=====";
+  doc = toJsonDoc(controlWidgetMsg);  
+  Serial.println(getJsonAttValue(doc, "device", "", ""));
+  Serial.println(getJsonAttValue(doc, "data", "id", ""));
+  Serial.println(getJsonAttValue(doc, "data", "method", ""));
+  Serial.println(getJsonAttValue(doc, "data", "params", ""));
 }
