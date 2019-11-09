@@ -42,8 +42,11 @@ void connectToMQTT() {
     MQTT_Status = "Connected";   
 
      // Subscribe for attibutes
-    subscribeToMQTT(MQTT_API_RPC);
-    subscribeToMQTT(MQTT_API_ATTRIBUTE);
+    //subscribeToMQTT(MQTT_API_RPC);
+    //subscribeToMQTT(MQTT_API_ATTRIBUTE);
+    
+    // TODO: Need to reconnect to device at start and periodically
+    publishDeviceConnect("BCDDC2C31684");
   }
   else
   {    
@@ -68,10 +71,10 @@ void subscribeToMQTT(String topic)
   log("[MQTT] <= Subscribing to topic: " + topic);  
 
   // Try one more time
-  if (!mqttClient.connected()) {
-    // connectToMQTT();
+  if (!mqttClient.connected()) {    
     log("MQTT] MQTT failed. Skip subcribe command.");
     printMQTTErrors();
+    connectToMQTT();
   }
   else
   {  
@@ -85,9 +88,9 @@ void publishToMQTT(String topic, String message) {
 
   // Try one more time
   if (!mqttClient.connected()) {
-    // connectToMQTT();
     log("[MQTT] MQTT failed. Skip publísh command.");
     printMQTTErrors();
+    connectToMQTT();
   }
   else
   {

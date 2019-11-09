@@ -1,12 +1,10 @@
 // Include required EasyLoraGateway libraries
-#include "EasyLoRaGateway.h"
+#include "EasyLoRa.h"
 
 // ===================================================
 // Main Program
 // ===================================================
 // This runs once when the gateway boots. 
-// The delay is not neccessary and just to avoid component re-initizalized by other compopents.
-// setupXXX functions are placed in module files
 void setup() {
   setupLED();  
   setupSerial();
@@ -28,11 +26,9 @@ void setup() {
   //setupOTA();
   //delay(1000);
   //setupPreferences();  
-  //publishDeviceConnect("BCDDC2C31684");
-  //testTBJsson();
 
-  //testJson();
-  //getEasyJsonPacket(R"=====(src:"BCDDC2C31684","mb_temp":"error","s_smk":"error")=====");
+  // Initial start time
+  startMillis = millis();
 }
 
 // Do the real works here
@@ -40,10 +36,18 @@ void loop() {
   // Check heap mem
   //log("esp_free_heap: " + String(esp_get_free_heap_size()) + 
   //    ", free_min_heap: " + String(esp_get_minimum_free_heap_size()));
-  
+
+  // TODO: Use multiple threads for faster speed
   // Working 
-  receiveAndForwardLoRaMessage();
+  // Receive commands from Portal
   sendAndReceiveMQTT();
+
+  // Forward the commands to LoRa node
+  receiveAndForwardLoRaMessage();  
+
+  // Run cron jobs
+  runCronJobs();
+  
   //runWebServer();
 
   // User presses button for action
@@ -58,10 +62,9 @@ void receiveAndForwardLoRaMessage(){
   // For LoRa 1
   String message = receiveLoRaMessage();
   if(message != ""){   
-    log("[LoRa 1] <= Received message: " + message);
+    log("[MAIN] <= Received message: " + message);
     // Send data to ThingsBoard
-    //publishToMQTT(MQTT_API_TELEMETRY, message);
-    processUplinkTBMessage(MQTT_API_TELEMETRY, message);
+    processUplinkTBMessage(message);
     blinkOffLED();
   }
 
@@ -80,4 +83,16 @@ void receiveAndForwardLoRaMessage(){
     blinkOffLED();
   }
   */
+}
+
+
+void runCronJobs()
+{
+  currentMillis = millis();
+  if (currentMillis - startMillis >= period)
+  {
+    log("[MAIN] Poll telemetry data");
+    pollTelemetryData("BCDDC2C31684");
+    startMillis = currentMillis;
+  }
 }
