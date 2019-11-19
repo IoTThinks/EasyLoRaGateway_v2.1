@@ -7,7 +7,7 @@ MQTTClient mqttClient(1024);
 unsigned long lastMillis = 0;
 
 String MQTT_Status = "Not Initialized";
-String MQTT_Lastsent_Msg = "--No data--";
+//String MQTT_Lastsent_Msg = "--No data--";
 
 void setupMQTT() {
   // Should be connected to internet  
@@ -32,13 +32,13 @@ void connectToMQTT() {
   else
   {
     log("[MQTT] Connecting to MQTT...");
-    //mqttClient.connect(string2Char(getChipID()), MQTT_USERNAME, MQTT_SECRET);
-    mqttClient.connect(string2Char(getChipID()), MQTT_USERNAME);
+    mqttClient.connect(SYS_ChipID, MQTT_USERNAME);
   }
 
   if(mqttClient.connected())
   {
     log("[MQTT] Connected to MQTT.");
+    onOffSpeaker(1, true); // OK
     MQTT_Status = "Connected";   
 
      // Subscribe for attibutes
@@ -47,6 +47,13 @@ void connectToMQTT() {
     
     // TODO: Need to reconnect to device at start and periodically
     publishDeviceConnect("BCDDC2C31684");
+    publishDeviceConnect("4C11AE707F9C");
+    publishDeviceConnect("BCDDC2C56C64");
+    publishDeviceConnect("240AC417E194"); 
+
+    publishDeviceConnect("4C11AE71A0A8"); // Node 5
+    publishDeviceConnect("4C11AE6D3EA0"); // Node 9
+    publishDeviceConnect("240AC417E1B8"); // Node 10
   }
   else
   {    
@@ -60,43 +67,44 @@ void connectToMQTT() {
 // Basic commands
 // ====================
 void mqttMessageReceived(String &topic, String &payload) {
-  log("[MQTT] => Received message from MQTT: " + payload + " [Topic: " + topic + "]");
+  log("[MQTT] => Received message from MQTT: ", string2Char(payload), " .Topic: ", string2Char(topic));
   
   // To process MQTT in TB module
   processDownlinkTBMessage(topic, payload);
 }
 
-void subscribeToMQTT(String topic)
+void subscribeToMQTT(const String& topic)
 {
-  log("[MQTT] <= Subscribing to topic: " + topic);  
+  log("[MQTT] <= Subscribing to topic: ", string2Char(topic));
 
   // Try one more time
   if (!mqttClient.connected()) {    
-    log("MQTT] MQTT failed. Skip subcribe command.");
+    log("MQTT] ============> ERROR!!! MQTT failed. Skip subcribe command.");
+    onOffSpeaker(3, true); // Error
     printMQTTErrors();
     connectToMQTT();
   }
-  else
-  {  
-    // Subscribe for topic
-    mqttClient.subscribe(topic);
-  }
+
+  // Subscribe for topic
+  mqttClient.subscribe(topic);
 }
 
-void publishToMQTT(String topic, String message) {
-  log("[MQTT] <= Send message to MQTT: " + message + " [Topic: " + topic + "]");  
+void publishToMQTT(const String& topic, const String& message) {
+  log("[MQTT] <= Send message to MQTT: ", string2Char(message), ". Topic: ", string2Char(topic));  
 
   // Try one more time
   if (!mqttClient.connected()) {
-    log("[MQTT] MQTT failed. Skip publísh command.");
+    log("[MQTT] ============> ERROR!!! MQTT failed. Skip publísh command.");
+    onOffSpeaker(3, true); // Error
     printMQTTErrors();
     connectToMQTT();
   }
-  else
-  {
-    mqttClient.publish(topic, message);
-    MQTT_Lastsent_Msg = message;
-  }
+  
+  // Working
+  // mqttClient.publish(topic, message);
+  mqttClient.publish(topic, message, true, 1);
+  
+  //MQTT_Lastsent_Msg = message;
 }
 
 // Read the MQTT receive and send buffers and process any messages it finds.
@@ -106,10 +114,11 @@ void sendAndReceiveMQTT() {
 }
 
 void printMQTTErrors() {
-  log("[MQTT] Last error = " + getMQTTLastError() + ", Return Code = " + getMQTTReturnCode());
+  log("[MQTT] Last error = ", string2Char(getMQTTLastError()),
+    ", Return Code = ", string2Char(getMQTTReturnCode()));
 }
 
-String getMQTTLastError()
+char* getMQTTLastError()
 {
   int lwmqtt_err_t = mqttClient.lastError();
   switch(lwmqtt_err_t)
@@ -147,7 +156,7 @@ String getMQTTLastError()
   }
 }
 
-String getMQTTReturnCode()
+char* getMQTTReturnCode()
 {
   int lwmqtt_return_code_t = mqttClient.returnCode();
   switch(lwmqtt_return_code_t)

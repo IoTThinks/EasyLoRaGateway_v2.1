@@ -6,93 +6,97 @@
 // ===================================================
 // This runs once when the gateway boots. 
 void setup() {
-  setupLED();  
   setupSerial();
+  setChipID();
+  setupLED();
   
-  //setupSerialBT();
-  printChipID();
-  
+  // TODO: Check heap fragmentation
+  // setupSerialBT();  
   setupSpeaker();
-  setupButton();
+  //setupButton();
   //setupFileSystem();
   setupEthernet();
   setupWiFi();
-  //delay(5000);  
-  //setupMQTT(); <====== Triggered by ETH / WiFi event
+
+  // No need. Triggered by ETH / WiFi event
+  //setupMQTT();
+
+  // TODO: To enable LoRa 2 for faster concurrency
   setupLoRa();  
-  //setupLoRa2(); 
-  //setupWebServer();
-  //delay(10000);
+  setupLoRa2(); 
+
+  // Not in use
+  //setupWebServer();  
   //setupOTA();
-  //delay(1000);
   //setupPreferences();  
 
-  // Initial start time
-  startMillis = millis();
+  // Create background cron job task
+  xTaskCreate(cronjobTask, "cronjobTask", 10240, NULL, CRONJOB_PRIORITY_POLLING_NODE, NULL);
 }
 
 // Do the real works here
 void loop() {  
   // Check heap mem
-  //log("esp_free_heap: " + String(esp_get_free_heap_size()) + 
-  //    ", free_min_heap: " + String(esp_get_minimum_free_heap_size()));
+  // logHeap();
 
   // TODO: Use multiple threads for faster speed
-  // Working 
   // Receive commands from Portal
-  sendAndReceiveMQTT();
+  // sendAndReceiveMQTT();
 
-  // Forward the commands to LoRa node
-  receiveAndForwardLoRaMessage();  
-
-  // Run cron jobs
-  runCronJobs();
-  
+  // Not in use
   //runWebServer();
-
-  // User presses button for action
   //performUserAction();
-  
-  // TODO: When to accept OTA update?
   //waitingForOTA();  
+
+  // Delay a bit for watch dog
+  vTaskDelay(1);
 }
 
-// Receive LoRa message and send to MQTT Server
-void receiveAndForwardLoRaMessage(){
-  // For LoRa 1
-  String message = receiveLoRaMessage();
-  if(message != ""){   
-    log("[MAIN] <= Received message: " + message);
-    // Send data to ThingsBoard
-    processUplinkTBMessage(message);
-    blinkOffLED();
+void cronjobTask(void* pvParameters) {
+  while(true)
+  {
+    runCronJobs();
+    vTaskDelay(100);
   }
-
-  /*
-  // For LoRa 2
-  String message2 = receiveLoRa2Message();
-  if(message2 != ""){
-    log("[LoRa 2] <= Received message: " + message2);
-    
-    // Send to MQTT
-    forwardNodeMessageToMQTT(message2);
-
-    // Send data to ThingsBoard
-    IoTMessage tbMessage2 = getIoTMessage("{" + message2 + "}");
-    uploadTelemetryData(tbMessage2.src, tbMessage2.telemetry);
-    blinkOffLED();
-  }
-  */
 }
-
 
 void runCronJobs()
 {
-  currentMillis = millis();
-  if (currentMillis - startMillis >= period)
-  {
-    log("[MAIN] Poll telemetry data");
-    pollTelemetryData("BCDDC2C31684");
-    startMillis = currentMillis;
+  // Receive commands from Portal
+  sendAndReceiveMQTT();
+  
+  CRONJOB_CURRENT_MILLIS = millis();
+  if (CRONJOB_CURRENT_MILLIS - CRONJOB_START_MILLIS >= CRONJOB_POLLING_NODE_PERIOD)
+  {      
+    log("[MAIN] Polling telemetry data...");
+    log("[MAIN] ============ Polling telemetry data...Node 0 ============");
+    pollTelemetryData("BCDDC2C31684"); // 132
+    vTaskDelay(1000);
+
+    log("[MAIN] ============ Polling telemetry data...Node 1 ============");
+    pollTelemetryData("4C11AE707F9C"); // 156
+    vTaskDelay(1000);
+
+    log("[MAIN] ============ Polling telemetry data...Node 4 ============");
+    pollTelemetryData("BCDDC2C56C64"); // 100
+    vTaskDelay(1000);
+
+    log("[MAIN] ============ Polling telemetry data...Node 5 ============");
+    pollTelemetryData("4C11AE71A0A8"); // 168
+    vTaskDelay(1000);
+    
+    log("[MAIN] ============ Polling telemetry data...Node 6 ============");
+    pollTelemetryData("240AC417E194"); // 148
+    vTaskDelay(1000);
+
+    log("[MAIN] ============ Polling telemetry data...Node 9 ============");
+    pollTelemetryData("4C11AE6D3EA0"); // 160
+    vTaskDelay(1000);
+
+    log("[MAIN] ============ Polling telemetry data...Node 10 ============");
+    pollTelemetryData("240AC417E1B8"); // 184
+    vTaskDelay(1000);
+    
+    CRONJOB_START_MILLIS = CRONJOB_CURRENT_MILLIS;
   }
 }

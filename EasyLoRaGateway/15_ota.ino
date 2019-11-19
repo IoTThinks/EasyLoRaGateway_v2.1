@@ -28,7 +28,7 @@ void setupOTA() {
         type = "filesystem";
 
       // NOTE: if updating SPIFFS this would be the place to unmount SPIFFS using SPIFFS.end()
-      log("[OTA] Start updating " + type);
+      log("[OTA] Start updating ", type);
     })
     .onEnd([]() {
       log("\n[OTA] End");

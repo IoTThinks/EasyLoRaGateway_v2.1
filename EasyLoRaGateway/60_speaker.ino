@@ -23,7 +23,7 @@ void offSpeaker()
 // On and off speaker multiple times for different sound codes
 void onOffSpeaker(int times, bool isLongBeep)
 {
-  log("[SPK] Sound speaker " + (String) times + " time(s)");
+  log("[SPK] Sound speaker multiple times");
   
   // Long beep in 200ms and short beep in 50ms
   int soundTime = isLongBeep? 100 : 50; 

@@ -12,9 +12,9 @@ void setupWebServer() {
   // Can not get if starts OK
   webServer.begin();
   if(eth_connected == true)
-    log("[WEBSERVER] Web server should be at http://" + ETH_Ip);
+    log("[WEBSERVER] Web server should be at http://", ETH_Ip);
   else
-    log("[WEBSERVER] Web server should be at http://" + WiFi_Ip);
+    log("[WEBSERVER] Web server should be at http://", WiFi_Ip);
   WEBSERVER_Status = "OK";
 }
 
@@ -55,8 +55,8 @@ void runWebServer() {
           webClient.println("<p>MQTT Status: " + MQTT_Status + "</p>");
           webClient.println("<p>Reset Status: " + String(reset_times) + " times</p>");
           webClient.println("<h2>2. Gateway Activities</h2>");
-          webClient.println("<p>Last Received Lora Message: " + LORA_Lastreceived_Msg + "</p>");
-          webClient.println("<p>Last Forwarded MQTT Message: " + MQTT_Lastsent_Msg + "</p>");
+          //webClient.println("<p>Last Received Lora Message: " + LORA_Lastreceived_Msg + "</p>");
+          //webClient.println("<p>Last Forwarded MQTT Message: " + MQTT_Lastsent_Msg + "</p>");
           webClient.println("<h2>3. Configuration</h2>");
           webClient.println("<p>LED <a href=\"ledon\"><button>ON</button></a>&nbsp;<a href=\"ledoff\"><button>OFF</button></a></p>");          
           webClient.println("</body>");

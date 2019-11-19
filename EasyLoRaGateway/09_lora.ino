@@ -4,7 +4,7 @@
 // ====================================
 // Status
 String LORA_Status = "Not Initialized";
-String LORA_Lastreceived_Msg ="--No data--";
+//String LORA_Lastreceived_Msg ="--No data--";
 
 void setActiveLoRa() {
   digitalWrite(LORA2_SS, HIGH);
@@ -25,7 +25,7 @@ void setupLoRa() {
   SPI.begin(LORA_SCK, LORA_MISO, LORA_MOSI);
   LoRa.setPins(LORA_SS, LORA_RST, LORA_DIO012);
   
-  while (!LoRa.begin(LORA_FEQ)) {
+  while (!LoRa.begin(LORA_FREQ)) {
     log("[LoRa 1] Starting LoRa failed!");    
     LORA_Status="FAILED";
     delay(1000);
@@ -37,79 +37,83 @@ void setupLoRa() {
   LoRa.setPreambleLength(LORA_PREAMBLE_LENGTH);
   LoRa.enableCrc();
 
+  // Set continuous receive
+  LoRa.onReceive(onLoRa1ReceiveCallback);
+  LoRa_rxMode();
+  
   log("[LoRa 1] LoRa started OK!");
   LORA_Status = "OK";
 }
 
-String receiveLoRaMessage() {
-  // Set active LoRa chip
-  setActiveLoRa();
-  
-  int packetSize = LoRa.parsePacket();
-  if (packetSize == 0) return "";          // if there's no packet, return
-
-  // read packet header bytes:
-  /*
-  int recipient = LoRa.read();          // recipient address
-  byte sender = LoRa.read();            // sender address
-  byte incomingMsgId = LoRa.read();     // incoming msg ID
-  byte incomingLength = LoRa.read();    // incoming msg length
-  */
-  
-  String incoming = "";                 // payload of packet
-
-  while (LoRa.available()) {            // can't use readString() in callback, so
-    incoming += (char)LoRa.read();      // add bytes one by one
-  }
-
-  /*
-  if (incomingLength != incoming.length()) {   // check length for error
-    log("error: message length does not match length");
-    return;                             // skip rest of function
-  }
-
-  // if the recipient isn't this device or broadcast,
-  if (recipient != localAddress && recipient != 0xFF) {
-    log("This message is not for me.");
-    return;                             // skip rest of function
-  }
-
-  // if message is for this device, or broadcast, print details:   
-  log("Received from: 0x" + String(sender, HEX));
-  log("Sent to: 0x" + String(recipient, HEX));
-  log("Message ID: " + String(incomingMsgId));
-  log("Message length: " + String(incomingLength));
-  log("Message: " + incoming);  
-  log("RSSI: " + String(LoRa.packetRssi()));
-  log("Snr: " + String(LoRa.packetSnr()));
-  log();
-  */
-
-  // Added LoRa signal quality
-  // "meta":{"rssi":-60,"snr":9}
-  incoming = incoming +              
-             R"=====(,"meta":{"rssi":)=====" + String(LoRa.packetRssi()) +
-             R"=====(,"snr":)=====" + String(LoRa.packetSnr()) +
-             "}";
-  
-  LORA_Lastreceived_Msg = incoming;
-  return incoming;
+void LoRa_txMode(){
+  log("[LoRa 1] Set TX mode");
+  LoRa.idle();                          // set standby mode
+  LoRa.enableInvertIQ();                // active invert I and Q signals
 }
 
-// NOT tested yet
-void sendLoRaMessage(String outgoing) {
+void LoRa_rxMode(){
+  log("[LoRa 1] Set RX mode");
+  LoRa.disableInvertIQ();               // normal mode
+  LoRa.receive();                       // set receive mode
+}
+
+// To send a single LoRa message
+void sendLoRaMessage(const char* outgoing) {
+  // Check heap mem
+  logHeap();
+  
+  // If sending message from sensor is empty, ignore it.
+  if(strlen(outgoing) == 0)
+    return;
+   
   // Set active LoRa chip
   setActiveLoRa();
-  
-  log("[LoRa 1] => Sending packet: " + outgoing);
+
+  // Start sending
+  log("[LoRa 1] => Sending packet: ", outgoing);
+  LoRa_txMode();                        // set tx mode
   LoRa.beginPacket();                   // start packet
-  /*
-  msgCount++;                           // increment message ID
-  LoRa.write(destination);              // add destination address
-  LoRa.write(localAddress);             // add sender address
-  LoRa.write(msgCount);                 // add message ID
-  LoRa.write(outgoing.length());        // add payload length
-  */
   LoRa.print(outgoing);                 // add payload
-  LoRa.endPacket();                     // finish packet and send it  
+  LoRa.endPacket();                     // finish packet and send it
+  
+  // Not working with invertIQ option
+  // LoRa.endPacket(true); // true = async / non-blocking mode
+
+  // Set back to receive mode
+  LoRa_rxMode();                        // set rx mode
+}
+
+void loRa1ReadTask(void* pvParameters) {
+  int packetSize = *((int*)pvParameters);
+  
+  // To receive message using char* to avoid heap fragmentation
+  char incoming[256];
+  
+  for (int i = 0; i < packetSize; i++) {
+    incoming[i] = (char)LoRa.read();
+  }
+
+  // To terminate the string
+  incoming[packetSize] = '\0';
+
+  // Added LoRa signal quality
+  // ",meta":{"rssi":-60,"snr":9}
+  strcat(incoming, R"=====(,"meta":{"rssi":)=====");
+  strcat(incoming, string2Char(String(LoRa.packetRssi())));
+  strcat(incoming, R"=====(,"snr":)=====");
+  strcat(incoming, string2Char(String(LoRa.packetSnr())));
+  strcat(incoming, "}");
+  
+  log("[LoRa 1] Receive and process downlink message: ", incoming);
+  processUplinkTBMessage(incoming);
+  
+  //LORA_Lastreceived_Msg = incoming;
+  
+  // Cleanup task before exiting
+  vTaskDelay(10);
+  vTaskDelete(NULL);
+}
+
+void onLoRa1ReceiveCallback(int packetSize) {
+  xTaskCreate(loRa1ReadTask, "loRa1ReadTask", 10240, (void*)&packetSize, CRONJOB_PRIORITY_READLORA, NULL);
 }

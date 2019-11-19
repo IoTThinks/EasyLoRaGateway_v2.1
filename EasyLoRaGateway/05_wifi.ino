@@ -1,12 +1,10 @@
 static bool wifi_connected = false;
 String WiFi_Status;
 String WiFi_Ip;
-String WiFi_hostname;
 
 void setupWiFi()
 { 
-  WiFi_hostname = getHostname("WiFi");
-  WiFi.setHostname(string2Char(WiFi_hostname));
+  WiFi.setHostname(SYS_HostName);
   WiFi.begin(ssid, password);
   WiFi.setSleep(false); // Do not sleep
   log("[WiFi] Connecting to WiFi...");
@@ -72,9 +70,8 @@ void WiFiEvent(WiFiEvent_t event)
     // ===============================
     case SYSTEM_EVENT_ETH_START:
       log("[ETH] ETH Started");
-      ETH_hostname = getHostname("ETH");
-      ETH.setHostname(string2Char(ETH_hostname));
-      log("[ETH] Hostname: " + ETH_hostname);      
+      ETH.setHostname(SYS_HostName);
+      log("[ETH] Hostname: ", SYS_HostName);      
       break;
     case SYSTEM_EVENT_ETH_CONNECTED:
       log("[ETH] ETH Connected. No IP.");
@@ -86,7 +83,8 @@ void WiFiEvent(WiFiEvent_t event)
       setNetworkDisconnectedStatus("WiFi");   
          
       ETH_Ip = ETH.localIP().toString();
-      log("[ETH] ETH connected. IP address: " + ETH_Ip);
+      // TODO: To optimize IPAddress to char*
+      log("[ETH] ETH connected. IP address: ", string2Char(ETH_Ip));
       setNetworkConnectedStatus("ETH");
       
       // Reconnect MQTT when wifi is reconnected
@@ -132,9 +130,10 @@ void WiFiEvent(WiFiEvent_t event)
       }
       else
       {
-        Serial.print("[WiFi] WiFi connected. ");
+        // To optimize this
+        
         WiFi_Ip = WiFi.localIP().toString();
-        log("[WiFi] IP address: " + WiFi_Ip);        
+        log("[WiFi] WiFi connected. IP address: ", string2Char(WiFi_Ip));
         setNetworkConnectedStatus("WiFi");
 
         // Reconnect MQTT when wifi is reconnected
@@ -149,7 +148,7 @@ void WiFiEvent(WiFiEvent_t event)
       WiFi.reconnect();
       break;
     default:      
-      log("[ETH_WiFi] Unhandled ETH_WiFi event code: " + (String) event);      
+      log("[ETH_WiFi] Unhandled ETH_WiFi");      
       break;
   }
 }

@@ -6,7 +6,6 @@ static bool eth_connected = false;
 WiFiClient netClient;
 String ETH_Status;
 String ETH_Ip;
-String ETH_hostname;
 
 void setupEthernet()
 {
@@ -16,10 +15,9 @@ void setupEthernet()
   ETH.begin();
 }
 
-void httpGet(const char * host, uint16_t port)
+void httpGet(char* host, uint16_t port)
 {
-  Serial.print("\n[ETH] Connecting to ");
-  log(host);
+  log("\n[ETH] Connecting to ", host);
 
   //WiFiClient client;
   if (!netClient.connect(host, port)) {
@@ -33,7 +31,7 @@ void httpGet(const char * host, uint16_t port)
     Serial.write(netClient.read());
   }
 
-  log("closing connection\n");
+  log("closing connection");
   netClient.stop();
 }
 

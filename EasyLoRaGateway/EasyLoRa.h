@@ -67,15 +67,18 @@ bool isBTConnected = false;
 #define LORA2_RST        15
 
 // LoRa 1 signal configuration
-#define LORA_FEQ 433E6
+#define LORA_FREQ 433E6
 #define LORA_SF 7 // 7 is the fastest. 12 is is farthest
 #define LORA_CR 5
 #define LORA_BW 125E3 //31.25E3 // 41.7E3 //125E3
 #define LORA_PREAMBLE_LENGTH  8
 
 // LoRa 2 signal configuration
-#define LORA2_FEQ 433E6
-#define LORA2_SF 12 // 7 is the fastest. 12 is is farthest
+LoRaClass LoRa2;
+#define LORA2_FREQ_BASE 433E6
+#define LORA2_FREQ_STEPS 200E3 // Steps must be larger than BW
+#define LORA2_FREQ_NUM_CHANNELS 19 // Max channels (not including base channel)
+#define LORA2_SF 7 // 7 is the fastest. 12 is is farthest
 #define LORA2_CR 5
 #define LORA2_BW 125E3 //31.25E3 // 41.7E3 //125E3
 #define LORA2_PREAMBLE_LENGTH  8
@@ -149,10 +152,18 @@ volatile bool isBtnPressed = false;
 #define TB_HTTP_TIMEOUT 10000 // In ms
 
 // =====================
-// Utils
+// Utils - System
 // =====================
 #include <ArduinoJson.h>
-unsigned int gatewayReqID = 0;
-unsigned long startMillis;
-unsigned long currentMillis;
-const unsigned long period = 5000; // miliseconds
+unsigned int SYS_GatewayReqID = 0;
+char SYS_ChipID[15];
+char SYS_HostName[20];
+
+// =====================
+// Cron jobs
+// =====================
+#define CRONJOB_PRIORITY_READLORA 1
+#define CRONJOB_PRIORITY_POLLING_NODE 0 // 0 is Idle, default is 1
+unsigned long CRONJOB_START_MILLIS = 0;
+unsigned long CRONJOB_CURRENT_MILLIS;
+const unsigned long CRONJOB_POLLING_NODE_PERIOD = 15000; // miliseconds

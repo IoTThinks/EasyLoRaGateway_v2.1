@@ -25,7 +25,7 @@ void serialBTCallback(esp_spp_cb_event_t event, esp_spp_cb_param_t *param){
 void setupSerialBT() {
   // Bluetooth device name
   SerialBT.register_callback(serialBTCallback);    
-  SerialBT.begin("EG-" + String(getChipID()));
+  SerialBT.begin(SYS_HostName);
   esp_bt_mem_release(ESP_BT_MODE_BLE);
   //esp_bt_mem_release(ESP_BT_MODE_CLASSIC_BT);
   //esp_bt_mem_release(ESP_BT_MODE_BTDM);

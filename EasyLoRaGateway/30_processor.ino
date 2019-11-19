@@ -1,44 +1,33 @@
-
 // ==========================
-// TB Main process
+// Process TB Downlink
 // ==========================
 void processDownlinkTBMessage(const String& topic, const String& mqttMessage)
 {
-  log("[TB] => Process downlink message: : " + mqttMessage + " [Topic: " + topic + "]");
+  log("[PROC] => Process downlink message: : ", string2Char(mqttMessage), ". Topic: ", string2Char(topic));
   
-  StaticJsonDocument<200> doc = toJsonDoc(mqttMessage);
+  StaticJsonDocument<200> doc = toJsonDoc(string2Char(mqttMessage));
   if(doc.isNull())
   {
-    log("[TB] Invalid MQTT Format. Skip processing message.");
+    log("[PROC] Invalid downlink message");
     return;
   }
   
   if(topic == MQTT_API_RPC)
   {
-    String deviceName = getJsonAttValue(doc, "device", "", "");
-    String request_id = getJsonAttValue(doc, "data", "id", "");
-    String methodName = getJsonAttValue(doc, "data", "method", "");
+    String deviceName = getJsonAttValue(doc, "device", "", "");   
+    String request_id = getJsonAttValue(doc, "data", "id", "");  
+    String methodName = getJsonAttValue(doc, "data", "method", "");   
     String params = getJsonAttValue(doc, "data", "params", "");
     
     // To forward to LoRa node
     if(methodName == "setP2")
-    {
-      String outgoing((char *)0);
-      
-      // Gateway to ask not to execute command
+    {      
+      // Gateway to ask node to execute command
       // "dst":"Device C","id":251,"method":"setP1","params":"false"
-      outgoing += R"=====("dst":")=====";
-      outgoing += deviceName;
-      outgoing += R"=====(","id":)=====";
-      outgoing += request_id;
-      outgoing += R"=====(,"method":")=====";
-      outgoing += methodName;
-      outgoing += R"=====(","params":")=====";
-      outgoing += params;
-      outgoing += "\"";
-      sendLoRaMessage(outgoing);
+      sendDownlinkLoRaCommand(deviceName, request_id, methodName, params);
       
-      // Process for attribute update and RPC response is done at Uplink process     
+      // Process for attribute update and RPC response is done at Uplink process
+      // Do nothing here
     }   
     else if(methodName == "getTermInfo")
     {
@@ -47,27 +36,40 @@ void processDownlinkTBMessage(const String& topic, const String& mqttMessage)
       // publishRPCResponse(deviceName, request_id, R"=====({ok: true, platform: os.platform(), type: os.type(), release: os.release()})====="); 
     }
 
-    log("[TB] => Downlink message: MQTT_API_RPC. Device=" + deviceName + ", id=" + request_id + ", method=" + methodName + ", params=" + params);
+    log("[PROC] => Process downlink message: MQTT_API_RPC. Device=", string2Char(deviceName),
+      ", id=", string2Char(request_id), ", method=", string2Char(methodName),
+      ", params=", string2Char(params));
   }
   else
   {
-    log("[TB] => Downlink message: Unhandled message topic.");
+    log("[PROC] => Unhandled downlink message topic.");
   }
 }
 
+// ==========================
+// Process TB Uplink
+// ==========================
 // Process uplink message to TB
 // Uplink message will be in below format
 // "src":"BCDDC2C31684","id":366, "act":"att", "data":{"p1":true}, "meta":{"rssi":-55,"snr":9.25}
-void processUplinkTBMessage(const String& message)
+void processUplinkTBMessage(const char* message)
 {
-  log("[TB] <= Process uplink message: " + message);
+  log("[PROC] <= Process uplink message: ", message);
 
+  // Added { } to be a json
+  char parsingMessage[128];
+  strcpy(parsingMessage, "{");
+  strcat(parsingMessage, message);
+  strcat(parsingMessage, "}");
+  
   // Create Json document
-  StaticJsonDocument<200> doc = toJsonDoc("{" + message + "}");
+  StaticJsonDocument<200> doc = toJsonDoc(parsingMessage);
+
+  // TODO: To convert to char* for faster speed and lower heap fragmentation
   String src = getJsonAttValue(doc, "src", "", "");
-  String id = getJsonAttValue(doc, "id", "", "");
-  String act = getJsonAttValue(doc, "act", "", "");
-  String data = getJsonAttValue(doc, "data", "", "");
+  String id = getJsonAttValue(doc, "id", "", "");  
+  String act = getJsonAttValue(doc, "act", "", "");  
+  String data = getJsonAttValue(doc, "data", "", "");  
   String meta = getJsonAttValue(doc, "meta", "", "");
 
   if(act == "att")
@@ -96,6 +98,7 @@ void processUplinkTBMessage(const String& message)
 // ==========================
 // To inform TB that device is connected to gateway
 //  {"device":"Device A"}
+// TODO: To change to char* and free after use
 void publishDeviceConnect(const String& deviceName)
 {
   String returnStr((char *)0);
@@ -107,6 +110,7 @@ void publishDeviceConnect(const String& deviceName)
   publishToMQTT(MQTT_API_CONNECT, returnStr);
 }
 
+// TODO: To change to char* and free after use
 // Publish RPC response
 // {"device": "Device C", "id": $request_id, "data": {"success": true}}
 // Data is in json format with proper { }
@@ -114,7 +118,7 @@ void publishRPCResponse(const String& deviceName, const String& requestId, const
 {
   if(deviceName == "null")
   {
-    log("[TB] Null device name. Skip publishing RPC.");
+    log("[PROC] Null device name. Skip publishing RPC.");
     return;
   }
   
@@ -131,6 +135,7 @@ void publishRPCResponse(const String& deviceName, const String& requestId, const
   publishToMQTT(MQTT_API_RPC, returnStr);
 }
 
+// TODO: To change to char* and free after use
 // Set device attribute
 // attributeData is in format {"p1":"false","p2":"true"}
 // {"Device C":{"p1":"false","p2":"true"}}
@@ -138,7 +143,7 @@ void publishAttribute(const String& deviceName, const String& attributeData)
 {
   if(deviceName == "null")
   {
-    log("[TB] Null device name. Skip publishing attribute.");
+    log("[PROC] Null device name. Skip publishing attribute.");
     return;
   }
   
@@ -153,6 +158,7 @@ void publishAttribute(const String& deviceName, const String& attributeData)
   publishToMQTT(MQTT_API_ATTRIBUTE, returnStr);
 }
 
+// TODO: To change to char* and free after use
 // To send telemetry data
 // For one device only
 // Timestamp is default to 0. Will be populated by server
@@ -172,7 +178,7 @@ void publishTelemetry(const String& deviceName, const String& telemetryData)
 {
   if(deviceName == "null")
   {
-    log("[TB] Null device name. Skip publishing telemetry.");
+    log("[PROC] Null device name. Skip publishing telemetry.");
     return;
   }
   
@@ -187,28 +193,70 @@ void publishTelemetry(const String& deviceName, const String& telemetryData)
   publishToMQTT(MQTT_API_TELEMETRY, returnStr);
 }
 
-void testTBJsson()
-{
-  publishDeviceConnect("Device C");
-  publishAttribute("Device C", R"=====("switch":"false")=====");
-  publishTelemetry("Device C", R"=====("temperature": 42, "humidity": 80)=====");   
+// ==========================
+// LoRa downlink commands
+// ==========================
+// Gateway to ask node to execute command via LoRa message
+// "dst":"Device C","id":251,"method":"setP1","params":"false"
+void sendDownlinkLoRaCommand(const String& deviceName, const String& request_id, const String& methodName, 
+  const String& params)
+{ 
+  Serial.println("sendDownlinkLoRaCommand");
+  logHeap();
+  char *outgoing = (char *) malloc (256);
+      
+  // Gateway to ask node to execute command
+  // "dst":"Device C","id":251,"method":"setP1","params":"false"
+  strcpy(outgoing, R"=====("dst":")=====");
+  strcat(outgoing, string2Char(deviceName));
+  strcat(outgoing, R"=====(","id":)=====");
+  strcat(outgoing, string2Char(request_id));
+  strcat(outgoing, R"=====(,"method":")=====");
+  strcat(outgoing, string2Char(methodName));
+  strcat(outgoing, R"=====(","params":")=====");
+  strcat(outgoing, string2Char(params));
+  strcat(outgoing, "\"");
+
+  // Send LoRa command
+  sendDownlinkLoRaMessage(deviceName, outgoing);
+  
+  // Free memory
+  free(outgoing);
+  
+  logHeap();
 }
 
-// ==========================
-// CRON JOBS
-// ==========================
+// TODO: To change to char* and free after use
 // Gateway to send LoRa request to LoRa node for telemetry data
 // Message format: "dst":"Device C","id":251,"method":"poll","params":"tmt"
-void pollTelemetryData(String deviceID)
+void pollTelemetryData(const String& deviceID)
 {
-  String outgoing((char *)0);  
-  outgoing.reserve(64);
+  Serial.println("pollTelemetryData");
+  logHeap();
   
-  outgoing += R"=====("dst":")=====";
-  outgoing += deviceID;
-  outgoing += R"=====(","id":)=====";
-  outgoing += (++gatewayReqID);
-  outgoing += R"=====(,"method":"poll","params":"tmt")=====";
+  char *outgoing = (char *) malloc (256);
+  strcpy(outgoing, R"=====("dst":")=====");
+  strcat(outgoing, string2Char(deviceID));
+  strcat(outgoing, R"=====(","id":)=====");
+  strcat(outgoing, string2Char(String(++SYS_GatewayReqID)));
+  strcat(outgoing, R"=====(,"method":"poll","params":"tmt")=====");
 
-  sendLoRaMessage(outgoing);
+  // Send LoRa command
+  sendDownlinkLoRaMessage(deviceID, outgoing);
+  
+  // Free memory
+  free(outgoing);
+  
+  logHeap();
+}
+// ==========================
+// Physical LoRa transmission
+// ==========================
+void sendDownlinkLoRaMessage(const String& deviceName, const char* outgoing)
+{
+  // Get customed frequencty for each device id
+  long customedLoRaFreq = getCustomFreqFromDeviceName(deviceName);
+
+  // Send via LoRa 2
+  sendDynamicLoRa2Message(customedLoRaFreq, outgoing); 
 }
