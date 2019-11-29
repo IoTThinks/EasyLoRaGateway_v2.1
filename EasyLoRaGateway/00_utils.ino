@@ -47,6 +47,19 @@ String char2String(char* ch)
   return String(ch);
 }
 
+// String to int
+int string2Int(String str)
+{
+  return str.toInt();
+}
+
+// From char* to int
+int charPtr2Int(const char* charPtr)
+{
+  return atoi(charPtr);
+}
+
+
 // Mac to string without ":"
 String macToStr(const uint8_t* mac, bool isWithColon)
 {
@@ -62,22 +75,17 @@ String macToStr(const uint8_t* mac, bool isWithColon)
 }
 
  // To convert a hex value in string to decimal
-int hexChar2Decimal(char* hexInput)
+int hexChar2Decimal(const char* hexInput)
 {
   return strtol(hexInput, NULL, 16);
 }
 
 // Device name is in format BCDDC2C56C64
-long getCustomFreqFromDeviceName(const String& deviceName)
+long getCustomFreqForDeviceID(const char* deviceID)
 {
-  Serial.println("getCustomFreqFromDeviceName");
-  logHeap();
-  // 64
-  String lastOctet = deviceName.substring(10);
-  int deviceNetworkID = hexChar2Decimal(string2Char(lastOctet));
-  int deviceCustomChannel = deviceNetworkID % LORA2_FREQ_NUM_CHANNELS + 1;
-  logHeap();
-  
+  // Last octet is from 10th character. 64 in this case
+  int deviceNetworkID = hexChar2Decimal(&deviceID[10]);
+  int deviceCustomChannel = deviceNetworkID % LORA2_FREQ_NUM_CHANNELS + 1;  
   return LORA2_FREQ_BASE + deviceCustomChannel * LORA2_FREQ_STEPS;
 }
 
@@ -85,7 +93,7 @@ long getCustomFreqFromDeviceName(const String& deviceName)
 // JSON
 // ====================================
 // Print json to string for printing
-String jsonToString(StaticJsonDocument<200> doc)
+String jsonToString(StaticJsonDocument<UTILS_JSON_MAXLENGTH> doc)
 {
   String output;
   serializeJson(doc, output);
@@ -93,33 +101,33 @@ String jsonToString(StaticJsonDocument<200> doc)
 }
 
 // Convert to Json Doc from string
-StaticJsonDocument<200> toJsonDoc(const char* jsonStr)
+StaticJsonDocument<UTILS_JSON_MAXLENGTH> toJsonDoc(const char* jsonStr)
 { 
-  log("[UTIL] Parsing json string=", jsonStr);
-  StaticJsonDocument<200> doc;
+  // log("[UTIL] Parsing json string=", jsonStr);
+  StaticJsonDocument<UTILS_JSON_MAXLENGTH> doc;
   DeserializationError error = deserializeJson(doc, jsonStr);
 
   // Test if parsing succeeds.
   if (error) {
-    log("[UTIL] ============> ERROR!!! Json parse failed.");
+    log("[UTIL] ERROR!!! JSON PARSE FAILED. FAILED JSON: ", jsonStr);
   }
     
   return doc;
 }
 
 // Get Json Attribute value
-String getJsonAttValue(StaticJsonDocument<200> doc, const String& attNameLevel1, const String& attNameLevel2, 
-                       const String& attNameLevel3)
-{
+String getJsonAttValue(StaticJsonDocument<UTILS_JSON_MAXLENGTH> doc, const String& attNameLevel1, 
+                            const String& attNameLevel2, const String& attNameLevel3)
+{  
   if(attNameLevel3 != "")
-    doc[attNameLevel1][attNameLevel2][attNameLevel2];
+    return doc[attNameLevel1][attNameLevel2][attNameLevel2];
   else if(attNameLevel2 != "")
     return doc[attNameLevel1][attNameLevel2];
   else
     return doc[attNameLevel1];
 }
 
-String removeJsonAtt(StaticJsonDocument<200> doc, const String& attName)
+String removeJsonAtt(StaticJsonDocument<UTILS_JSON_MAXLENGTH> doc, const String& attName)
 {
   doc.remove(attName);
   return jsonToString(doc);

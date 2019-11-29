@@ -6,32 +6,34 @@
 // ===================================================
 // This runs once when the gateway boots. 
 void setup() {
+  // Enable debug and system information
   setupSerial();
   setChipID();
-  setupLED();
+
+  // Enable notification
+  setupLED();    
+  setupSpeaker();  
   
-  // TODO: Check heap fragmentation
-  // setupSerialBT();  
-  setupSpeaker();
-  //setupButton();
-  //setupFileSystem();
+  // Enable TCP/IP comunication
   setupEthernet();
   setupWiFi();
-
-  // No need. Triggered by ETH / WiFi event
-  //setupMQTT();
-
-  // TODO: To enable LoRa 2 for faster concurrency
+  
+  // Enable 2 LoRa chips
   setupLoRa();  
   setupLoRa2(); 
 
   // Not in use
-  //setupWebServer();  
-  //setupOTA();
-  //setupPreferences();  
-
+  // setupPreferences() is empty.
+  // setupSerialBT(); Use to much memory heap
+  // setupMQTT() is triggered by ETH / WiFi event
+  // setupProcessor() is triggered by setupMQTT
+  // setupWebServer();  
+  // setupOTA();
+  // setupButton();
+   
   // Create background cron job task
-  xTaskCreate(cronjobTask, "cronjobTask", 10240, NULL, CRONJOB_PRIORITY_POLLING_NODE, NULL);
+  // xTaskCreatePinnedToCore(cronjobTask, "cronjobTask", 10240, NULL, CRONJOB_POLLING_NODE_PRIORITY, NULL, 1); 
+  xTaskCreate(cronjobTask, "cronjobTask", 10240, NULL, CRONJOB_POLLING_NODE_PRIORITY, NULL);  
 }
 
 // Do the real works here
@@ -42,7 +44,7 @@ void loop() {
   // TODO: Use multiple threads for faster speed
   // Receive commands from Portal
   // sendAndReceiveMQTT();
-
+  
   // Not in use
   //runWebServer();
   //performUserAction();
@@ -55,48 +57,65 @@ void loop() {
 void cronjobTask(void* pvParameters) {
   while(true)
   {
-    runCronJobs();
-    vTaskDelay(100);
+    // Task 1: Polling MQTT
+    runCronjob_pollingMQTT();
+    vTaskDelay(100); // Let other tasks to run
+
+    // Task 2: Polling nodes
+    runCronJob_pollingNodes();
+    vTaskDelay(100); // Let other tasks to run
   }
 }
 
-void runCronJobs()
-{
-  // Receive commands from Portal
-  sendAndReceiveMQTT();
-  
-  CRONJOB_CURRENT_MILLIS = millis();
-  if (CRONJOB_CURRENT_MILLIS - CRONJOB_START_MILLIS >= CRONJOB_POLLING_NODE_PERIOD)
-  {      
-    log("[MAIN] Polling telemetry data...");
-    log("[MAIN] ============ Polling telemetry data...Node 0 ============");
-    pollTelemetryData("BCDDC2C31684"); // 132
-    vTaskDelay(1000);
-
-    log("[MAIN] ============ Polling telemetry data...Node 1 ============");
-    pollTelemetryData("4C11AE707F9C"); // 156
-    vTaskDelay(1000);
-
-    log("[MAIN] ============ Polling telemetry data...Node 4 ============");
-    pollTelemetryData("BCDDC2C56C64"); // 100
-    vTaskDelay(1000);
-
-    log("[MAIN] ============ Polling telemetry data...Node 5 ============");
-    pollTelemetryData("4C11AE71A0A8"); // 168
-    vTaskDelay(1000);
+// Task 1: Polling MQTT
+void runCronjob_pollingMQTT()
+{  
+  CRONJOB_POLLING_MQTT_CURRENT_MILLIS = millis();
+  if (CRONJOB_POLLING_MQTT_CURRENT_MILLIS - CRONJOB_POLLING_MQTT_START_MILLIS >= CRONJOB_POLLING_MQTT_PERIOD)
+  {  
+    // log("[MAIN] Polling MQTT data...");
     
-    log("[MAIN] ============ Polling telemetry data...Node 6 ============");
-    pollTelemetryData("240AC417E194"); // 148
-    vTaskDelay(1000);
+    // Receive commands from Portal
+    sendAndReceiveMQTT();
 
-    log("[MAIN] ============ Polling telemetry data...Node 9 ============");
-    pollTelemetryData("4C11AE6D3EA0"); // 160
-    vTaskDelay(1000);
+    // Reset timer
+    CRONJOB_POLLING_MQTT_START_MILLIS = CRONJOB_POLLING_MQTT_CURRENT_MILLIS;
+  }
+}
 
-    log("[MAIN] ============ Polling telemetry data...Node 10 ============");
-    pollTelemetryData("240AC417E1B8"); // 184
-    vTaskDelay(1000);
+// Task 2: Polling nodes
+// TODO: To be replaced as dynamic code
+void runCronJob_pollingNodes()
+{    
+  CRONJOB_POLLING_NODE_CURRENT_MILLIS = millis();
+  if (CRONJOB_POLLING_NODE_CURRENT_MILLIS - CRONJOB_POLLING_NODE_START_MILLIS >= CRONJOB_POLLING_NODE_PERIOD)
+  {    
+    // To display node list before polling
+    // displayNodeList();
+      
+    if(strlen(SYS_NODELIST[CRONJOB_POLLING_NODE_NEXTID]) > 0)
+    {
+      // To get to-be-polled node id
+      byte currentNodeId = CRONJOB_POLLING_NODE_NEXTID;
+      
+      log("[MAIN] Polling node[", string2Char(String(currentNodeId)), "]: ", SYS_NODELIST[currentNodeId]);  
+      pollTelemetryData(SYS_NODELIST[currentNodeId]);
+      // vTaskDelay(SYS_NODEPOLLING_DELAY);
+    }
+
+    // To set for next polling node id
+    if(CRONJOB_POLLING_NODE_NEXTID >= (SYS_MAXNODES -1))
+    {
+      // Reach last node, to back to first node
+      CRONJOB_POLLING_NODE_NEXTID = 0;
+    }
+    else
+    {
+      // To poll next node id next time
+      CRONJOB_POLLING_NODE_NEXTID++;
+    }
     
-    CRONJOB_START_MILLIS = CRONJOB_CURRENT_MILLIS;
+    // Reset timer
+    CRONJOB_POLLING_NODE_START_MILLIS = CRONJOB_POLLING_NODE_CURRENT_MILLIS;
   }
 }

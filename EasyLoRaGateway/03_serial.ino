@@ -8,8 +8,8 @@ void setupSerial() {
 // Log free heap
 void logHeap()
 {
-  log("esp_free_heap: ", string2Char(String(esp_get_free_heap_size())), 
-      ", free_min_heap: ", string2Char(String(esp_get_minimum_free_heap_size())));
+  log("[SERIAL] Free heap: ", string2Char(String(esp_get_free_heap_size())), 
+      ", free min heap: ", string2Char(String(esp_get_minimum_free_heap_size())));
 }
 
 // Optimize log with char*
@@ -26,7 +26,8 @@ void log(const char* content, bool isNewLine)
   {
     Serial.println();
   }
-  
+
+  /*
   if(isBTConnected)
   {
     SerialBT.print(content);
@@ -35,6 +36,7 @@ void log(const char* content, bool isNewLine)
       SerialBT.println();
     } 
   }
+  */
 }
 
 // Optimize log with char*

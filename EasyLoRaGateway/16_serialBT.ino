@@ -1,3 +1,4 @@
+/*
 // ====================================
 // Serial Bluetooth
 // ====================================
@@ -42,3 +43,4 @@ void disableSerialBT() {
 
   log("[SerialBT] SerialBT is disabled.");
 }
+*/

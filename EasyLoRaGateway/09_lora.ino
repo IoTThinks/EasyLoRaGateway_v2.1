@@ -45,42 +45,10 @@ void setupLoRa() {
   LORA_Status = "OK";
 }
 
-void LoRa_txMode(){
-  log("[LoRa 1] Set TX mode");
-  LoRa.idle();                          // set standby mode
-  LoRa.enableInvertIQ();                // active invert I and Q signals
-}
-
 void LoRa_rxMode(){
   log("[LoRa 1] Set RX mode");
   LoRa.disableInvertIQ();               // normal mode
   LoRa.receive();                       // set receive mode
-}
-
-// To send a single LoRa message
-void sendLoRaMessage(const char* outgoing) {
-  // Check heap mem
-  logHeap();
-  
-  // If sending message from sensor is empty, ignore it.
-  if(strlen(outgoing) == 0)
-    return;
-   
-  // Set active LoRa chip
-  setActiveLoRa();
-
-  // Start sending
-  log("[LoRa 1] => Sending packet: ", outgoing);
-  LoRa_txMode();                        // set tx mode
-  LoRa.beginPacket();                   // start packet
-  LoRa.print(outgoing);                 // add payload
-  LoRa.endPacket();                     // finish packet and send it
-  
-  // Not working with invertIQ option
-  // LoRa.endPacket(true); // true = async / non-blocking mode
-
-  // Set back to receive mode
-  LoRa_rxMode();                        // set rx mode
 }
 
 void loRa1ReadTask(void* pvParameters) {
@@ -104,7 +72,7 @@ void loRa1ReadTask(void* pvParameters) {
   strcat(incoming, string2Char(String(LoRa.packetSnr())));
   strcat(incoming, "}");
   
-  log("[LoRa 1] Receive and process downlink message: ", incoming);
+  log("[LoRa 1] Receive and process uplink message: ", incoming);
   processUplinkTBMessage(incoming);
   
   //LORA_Lastreceived_Msg = incoming;
@@ -115,5 +83,5 @@ void loRa1ReadTask(void* pvParameters) {
 }
 
 void onLoRa1ReceiveCallback(int packetSize) {
-  xTaskCreate(loRa1ReadTask, "loRa1ReadTask", 10240, (void*)&packetSize, CRONJOB_PRIORITY_READLORA, NULL);
+  xTaskCreate(loRa1ReadTask, "loRa1ReadTask", 10240, (void*)&packetSize, CRONJOB_READLORA_PRIORITY, NULL);
 }

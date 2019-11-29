@@ -59,7 +59,9 @@ void sendDynamicLoRa2Message(long customedLoRaFreq, const char* outgoing)
 // Send LoRa 2 message
 void sendLoRa2Message(const char* outgoing) {
   // Set active LoRa chip
+  taskDISABLE_INTERRUPTS();
   setActiveLoRa2();
+  taskENABLE_INTERRUPTS();
   
   log("[LoRa 2]=> Sending packet: ", outgoing);
   // LoRa2_txMode();                        // set tx mode
@@ -69,6 +71,8 @@ void sendLoRa2Message(const char* outgoing) {
   LoRa2.endPacket(true);                 // More reliable for RPC, may corrupt packet
   
   // Set active LoRa chip
+  taskDISABLE_INTERRUPTS();
   setActiveLoRa();
   LoRa_rxMode();
+  taskENABLE_INTERRUPTS();
 }

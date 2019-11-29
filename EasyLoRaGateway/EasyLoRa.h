@@ -2,6 +2,23 @@
 // Put all pin mappings and library here
 // ===================================================
 // =====================
+// SYSTEM
+// =====================
+char SYS_ChipID[15];
+char SYS_HostName[20];
+
+// To store the number of nodes
+#define SYS_MAXNODES 20 // From 0 to 19
+#define SYS_NODEID_LENGTH 12
+
+// 12 characters for Device ID and 1 null character
+char SYS_NODELIST[SYS_MAXNODES][SYS_NODEID_LENGTH + 1];
+
+// To store gateway request id
+// Ids bellow 100 are for system requests
+unsigned int SYS_GatewayReqID = 100;
+
+// =====================
 // Serial
 // =====================
 #define BAUD_RATE 115200 //9600
@@ -10,9 +27,8 @@
 // Preferences
 // =====================
 #include <Preferences.h>
-/* create an instance of Preferences library */
 Preferences preferences;
-unsigned int reset_times;
+unsigned int reset_times = 0;
 
 // =====================
 // Ethernet
@@ -38,11 +54,13 @@ const char* password = "EasyLoRa123";
 // =====================
 // Bluetooth
 // =====================
+/*
 #include "BluetoothSerial.h"
 #include "esp_bt.h"
 // Bluetooth Serial object
 BluetoothSerial SerialBT;
 bool isBTConnected = false;
+*/
 
 // =====================
 // LoRa 1 and 2
@@ -116,10 +134,13 @@ volatile bool isBtnPressed = false;
 // =====================
 // MQTT
 // =====================
-#include <MQTT.h>
+#include <PubSubClient.h>
 #define MQTT_KEEP_ALIVE 5 // int, in seconds
 #define MQTT_CLEAN_SESSION false // bool, "false" to resume existing session
 #define MQTT_TIMEOUT 15000 // int, in miliseconds
+#define MQTT_BUFFER_SIZE 256 // Default is 128
+#define MQTT_QOS 1
+#define MQTT_RETAINED true
 
 #define MQTT_SERVER "easylora.vn"
 #define MQTT_PORT 1883
@@ -134,10 +155,13 @@ volatile bool isBtnPressed = false;
 // Publish and subscribe to attribute updates from the server
 #define MQTT_API_ATTRIBUTE "v1/gateway/attributes"
 
-// Publish to get client-side or shared attribute specific values from the server
+// Publish to get client-side or shared attribute specific values of the GATEWAY
 // Subscribe before publish
-#define MQTT_API_ATTRIBUTE_RESPONSE "v1/gateway/attributes/response"
-#define MQTT_API_ATTRIBUTE_REQUEST "v1/gateway/attributes/request"
+#define MQTT_API_GATEWAY_ATTRIBUTE_RESPONSE_BASE "v1/devices/me/attributes/response/"
+#define MQTT_API_GATEWAY_ATTRIBUTE_RESPONSE "v1/devices/me/attributes/response/+"
+// v1/devices/me/attributes/request/$request_id
+#define MQTT_API_GATEWAY_ATTRIBUTE_REQUEST "v1/devices/me/attributes/request/"
+#define MQTT_API_GATEWAY_ATTRIBUTE_SUBSCRIBE "v1/devices/me/attributes"
 
 // Publish device telemetry
 #define MQTT_API_TELEMETRY "v1/gateway/telemetry"
@@ -155,15 +179,24 @@ volatile bool isBtnPressed = false;
 // Utils - System
 // =====================
 #include <ArduinoJson.h>
-unsigned int SYS_GatewayReqID = 0;
-char SYS_ChipID[15];
-char SYS_HostName[20];
+
+// Maximum length for StaticJsonDocument
+#define UTILS_JSON_MAXLENGTH 256
 
 // =====================
 // Cron jobs
 // =====================
-#define CRONJOB_PRIORITY_READLORA 1
-#define CRONJOB_PRIORITY_POLLING_NODE 0 // 0 is Idle, default is 1
-unsigned long CRONJOB_START_MILLIS = 0;
-unsigned long CRONJOB_CURRENT_MILLIS;
-const unsigned long CRONJOB_POLLING_NODE_PERIOD = 15000; // miliseconds
+#define CRONJOB_READLORA_PRIORITY 2
+
+// Send and receive MQTT
+// #define CRONJOB_POLLING_MQTT_PRIORITY 0 // 0 is Idle, default is 1
+unsigned long CRONJOB_POLLING_MQTT_START_MILLIS = 0;
+unsigned long CRONJOB_POLLING_MQTT_CURRENT_MILLIS;
+const unsigned long CRONJOB_POLLING_MQTT_PERIOD = 500; // miliseconds
+
+// Polling node
+#define CRONJOB_POLLING_NODE_PRIORITY 0 // 0 is Idle, default is 1
+unsigned long CRONJOB_POLLING_NODE_START_MILLIS = 0;
+unsigned long CRONJOB_POLLING_NODE_CURRENT_MILLIS;
+const unsigned long CRONJOB_POLLING_NODE_PERIOD = 500; // miliseconds to poll next node
+byte CRONJOB_POLLING_NODE_NEXTID = 0; // Next node id to poll

@@ -20,11 +20,17 @@ void setNetworkConnectedStatus(String type)
   {
       eth_connected = true;
       ETH_Status = "Connected";
+
+      // Connect to MQTT
+      setupMQTT();
   }
   else if(type == "WiFi")
   {
       wifi_connected = true;
       WiFi_Status = "Connected";
+
+      // Connect to MQTT
+      setupMQTT();
   }
   else
   {
@@ -85,12 +91,7 @@ void WiFiEvent(WiFiEvent_t event)
       ETH_Ip = ETH.localIP().toString();
       // TODO: To optimize IPAddress to char*
       log("[ETH] ETH connected. IP address: ", string2Char(ETH_Ip));
-      setNetworkConnectedStatus("ETH");
-      
-      // Reconnect MQTT when wifi is reconnected
-      setupMQTT();
-      // connectToMQTT();
-      
+      setNetworkConnectedStatus("ETH");      
       break;
     case SYSTEM_EVENT_ETH_DISCONNECTED:
       log("[ETH] ETH Disconnected");
@@ -130,15 +131,10 @@ void WiFiEvent(WiFiEvent_t event)
       }
       else
       {
-        // To optimize this
-        
+        // To optimize this        
         WiFi_Ip = WiFi.localIP().toString();
         log("[WiFi] WiFi connected. IP address: ", string2Char(WiFi_Ip));
         setNetworkConnectedStatus("WiFi");
-
-        // Reconnect MQTT when wifi is reconnected
-        setupMQTT();
-        // connectToMQTT();
       }
       break;
     case SYSTEM_EVENT_STA_DISCONNECTED:
