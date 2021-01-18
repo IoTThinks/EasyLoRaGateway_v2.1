@@ -49,6 +49,7 @@ Datasheet: [esp32-wroom-32_datasheet_en.pdf](https://github.com/IoTThinks/EasyLo
 
 ### 4.2 Pinout of LoRa Ai-Thinker RA-02
 Datasheet: [LoRa-SX1278-Datasheet.pdf](https://github.com/IoTThinks/EasyLoRaGateway_v2.1/files/5829814/LoRa-SX1278-Datasheet.pdf)
+
 ![ra-02](https://user-images.githubusercontent.com/29994971/63237606-e07c2680-c26c-11e9-81fe-7d4bf97f237a.png)
 
 ### 4.3 Pinout of LoRa RFM95W
