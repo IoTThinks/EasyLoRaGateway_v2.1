@@ -15,8 +15,11 @@ From top
 From bottom
 ![Easy LoRa v2 1 - bottom](https://user-images.githubusercontent.com/29994971/63233301-ace3d100-c259-11e9-9a7b-c0d4757752c0.JPG)
 
-From inside
+From inside - Ai-Thinker Ra02 (433Mhz)
 ![Easy LoRa v2 1 - inside](https://user-images.githubusercontent.com/29994971/63233300-ace3d100-c259-11e9-8989-f151fbd00a25.JPG)
+
+From inside - RFM95W (915Mhz)
+![Easy LoRa Gateway v2 1 - RFM95W - Components](https://user-images.githubusercontent.com/29994971/104901891-90007f80-59b0-11eb-8f50-9a383154f43f.jpg)
 
 ## 2. Software feature (In progress)
 - Single or dual channel LoRa gateway
