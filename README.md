@@ -8,7 +8,18 @@ Previous version:
 - Old version of Easy LoRa gateway v1 is at https://github.com/IoTThinks/EasyLoraGateway
 - Old version of Easy LoRa gateway v2 is at https://github.com/IoTThinks/EasyLoRaGateway_v2
 
-## 1. Appearance 
+## 1. Hardware specification
+- 1 x ESP32 chip with WiFi 802.11n and BLE
+- 2 x LoRa SX1278 433MHz or 915Mhz (1-10 km range)
+- 1 x 100 Mbps Ethernet LAN
+- 1 x Ethernet Console (for debug and upload firmware)
+- 1 x Speaker
+- 1 x LED
+- 1 x Power LED
+- 1 x 5v Power jack
+- Over voltage protection, reverse-polarity protection, short-circuit protection via PTC fuse
+
+## 2. Appearance 
 From top
 ![Easy LoRa Gateway - Top](https://user-images.githubusercontent.com/29994971/63238055-d5c29100-c26e-11e9-8cbc-09ef7bee3845.JPG)
 
@@ -21,7 +32,22 @@ From inside - Ai-Thinker Ra02 (433Mhz)
 From inside - RFM95W (915Mhz)
 ![Easy LoRa Gateway v2 1 - RFM95W - Components](https://user-images.githubusercontent.com/29994971/104901891-90007f80-59b0-11eb-8f50-9a383154f43f.jpg)
 
-## 2. Software feature (In progress)
+## 3. Pin mappings
+Pin mappings from modules to main ESP32
+![Easy LoRa Gateway v2 1 - Pin mapping](https://user-images.githubusercontent.com/29994971/63233171-c59fb700-c258-11e9-8842-81c59109e307.png)
+
+## 4. Pinout references
+### 4.1 Pinout of ESP32
+![image](https://user-images.githubusercontent.com/29994971/60634413-07a3a380-9e39-11e9-86dd-2acc5d586cae.png)
+
+### 4.2 Pinout of LoRa Ai-Thinker RA-02
+![ra-02](https://user-images.githubusercontent.com/29994971/63237606-e07c2680-c26c-11e9-81fe-7d4bf97f237a.png)
+
+### 4.3 Pinout of LoRa RFM95W
+![rfm95w](https://user-images.githubusercontent.com/29994971/104902531-6eec5e80-59b1-11eb-900c-c7f35da2d57c.png)
+
+
+## 5. Software feature (In progress)
 - Single or dual channel LoRa gateway
 - Simple local management portal
 - Auto provision of Easy LoRa Plug and Node
@@ -29,24 +55,3 @@ From inside - RFM95W (915Mhz)
 - Web Service APIs for integration
 - Auto update firmware via LAN or Internet
 - OPEN SOURCE and commercial version
-
-## 3. Specification
-- 1 x ESP32 chip with WiFi 802.11n and BLE
-- 2 x LoRa SX1278 433MHz (1-10 km range)
-- 1 x 100 Mbps Ethernet LAN
-- 1 x Ethernet Console (for debug and upload firmware)
-- 1 x Speaker
-- 1 x LED
-- 1 x Power LED
-- 1 x 5v Power jack
-- Over voltage protection, reverse-polarity protection, short-circuit protection via PTC fuse
-
-## 4. Pin mappings
-Pin mappings from modules to main ESP32
-![Easy LoRa Gateway v2 1 - Pin mapping](https://user-images.githubusercontent.com/29994971/63233171-c59fb700-c258-11e9-8842-81c59109e307.png)
-
-## 5. Pinout of RA-02
-![ra-02](https://user-images.githubusercontent.com/29994971/63237606-e07c2680-c26c-11e9-81fe-7d4bf97f237a.png)
-
-## 6. Pinout of ESP32
-![image](https://user-images.githubusercontent.com/29994971/60634413-07a3a380-9e39-11e9-86dd-2acc5d586cae.png)
