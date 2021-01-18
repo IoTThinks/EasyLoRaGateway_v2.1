@@ -44,6 +44,8 @@ Pin mappings from modules to main ESP32
 ![ra-02](https://user-images.githubusercontent.com/29994971/63237606-e07c2680-c26c-11e9-81fe-7d4bf97f237a.png)
 
 ### 4.3 Pinout of LoRa RFM95W
+Datasheet: [RFM95W-V2.0.pdf](https://github.com/IoTThinks/EasyLoRaGateway_v2.1/files/5829531/RFM95W-V2.0.pdf)
+
 ![rfm95w](https://user-images.githubusercontent.com/29994971/104902531-6eec5e80-59b1-11eb-900c-c7f35da2d57c.png)
 
 
