@@ -1,4 +1,4 @@
-# EasyLoRaGateway v2.1 (Ai-Thinker Ra02 433Mhz and RFM95W 915Mhz)
+# EasyLoRaGateway v2.1 (433Mhz and 915Mhz)
 Easy LoRa gateway connects multiple smart IoT Plugs and Nodes in large buildings, factories and farms up to 10 km from the nearest Internet access. Easy LoRa gateway uses LoRa as the transmission protocol via 433+ Mhz/915+ Mhz wave. It enables us to remotely control our smart IoT Plugs and Nodes inexpensively and efficiently.
 - A 10-storey building only needs 01 Easy LoRa gateway to connects to all LoRa Plugs and sensors in the building. A 10-hectare farm may only needs 01 LoRa Gateway to reach all of its IoT devices.
 - Homepage: http://iotthinks.com/easy-lora-gateway/
