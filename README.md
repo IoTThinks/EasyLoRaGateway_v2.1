@@ -20,17 +20,21 @@ Previous version:
 - Over voltage protection, reverse-polarity protection, short-circuit protection via PTC fuse
 
 ## 2. Appearance 
+## 2.1 Components
+From inside - Ai-Thinker Ra02 (433Mhz)
+![Easy LoRa v2 1 - inside](https://user-images.githubusercontent.com/29994971/63233300-ace3d100-c259-11e9-8989-f151fbd00a25.JPG)
+
+From inside - RFM95W (915Mhz)
+![Easy LoRa Gateway v2 1 - RFM95W - Components](https://user-images.githubusercontent.com/29994971/104901891-90007f80-59b0-11eb-8f50-9a383154f43f.jpg)
+
+## 2.2 Casing and IOs
 From top
 ![Easy LoRa Gateway - Top](https://user-images.githubusercontent.com/29994971/63238055-d5c29100-c26e-11e9-8cbc-09ef7bee3845.JPG)
 
 From bottom
 ![Easy LoRa v2 1 - bottom](https://user-images.githubusercontent.com/29994971/63233301-ace3d100-c259-11e9-9a7b-c0d4757752c0.JPG)
 
-From inside - Ai-Thinker Ra02 (433Mhz)
-![Easy LoRa v2 1 - inside](https://user-images.githubusercontent.com/29994971/63233300-ace3d100-c259-11e9-8989-f151fbd00a25.JPG)
 
-From inside - RFM95W (915Mhz)
-![Easy LoRa Gateway v2 1 - RFM95W - Components](https://user-images.githubusercontent.com/29994971/104901891-90007f80-59b0-11eb-8f50-9a383154f43f.jpg)
 
 ## 3. Pin mappings
 ### 3.1 Ai-Thinker Ra02 version
