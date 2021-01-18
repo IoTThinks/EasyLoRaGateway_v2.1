@@ -1,4 +1,4 @@
-# EasyLoRaGateway v2.1
+# EasyLoRaGateway v2.1 (Ai-Thinker Ra02 433Mhz and RFM95W 915Mhz)
 Easy LoRa gateway connects multiple smart IoT Plugs and Nodes in large buildings, factories and farms up to 10 km from the nearest Internet access. Easy LoRa gateway uses LoRa as the transmission protocol via 433+ Mhz/915+ Mhz wave. It enables us to remotely control our smart IoT Plugs and Nodes inexpensively and efficiently.
 - A 10-storey building only needs 01 Easy LoRa gateway to connects to all LoRa Plugs and sensors in the building. A 10-hectare farm may only needs 01 LoRa Gateway to reach all of its IoT devices.
 - Homepage: http://iotthinks.com/easy-lora-gateway/
@@ -10,7 +10,7 @@ Previous version:
 
 ## 1. Hardware specification
 - 1 x ESP32 chip with WiFi 802.11n and BLE
-- 2 x LoRa SX1278 433MHz or 915Mhz (1-10 km range)
+- 2 x LoRa SX1278 433MHz (Ai-Thinker Ra02) or 915Mhz (RFM95W)
 - 1 x 100 Mbps Ethernet LAN
 - 1 x Ethernet Console (for debug and upload firmware)
 - 1 x Speaker
@@ -33,10 +33,15 @@ From inside - RFM95W (915Mhz)
 ![Easy LoRa Gateway v2 1 - RFM95W - Components](https://user-images.githubusercontent.com/29994971/104901891-90007f80-59b0-11eb-8f50-9a383154f43f.jpg)
 
 ## 3. Pin mappings
-Pin mappings from modules to main ESP32
+### 3.1 Ai-Thinker Ra02 version
+Pin mappings from main ESP32 to components
 ![Easy LoRa Gateway v2 1 - Pin mapping](https://user-images.githubusercontent.com/29994971/63233171-c59fb700-c258-11e9-8842-81c59109e307.png)
 
-## 4. Pinout references
+### 3.2 RFM95W version
+Pin mappings from main ESP32 to components
+![Easy LoRa Gateway v2 1 RFM95W - Pin mapping](https://user-images.githubusercontent.com/29994971/104907733-22f0e800-59b8-11eb-9b6b-f0ee3d424dfb.png)
+
+## 4. Pinout of MCU and LoRa
 ### 4.1 Pinout of ESP32
 ![image](https://user-images.githubusercontent.com/29994971/60634413-07a3a380-9e39-11e9-86dd-2acc5d586cae.png)
 
