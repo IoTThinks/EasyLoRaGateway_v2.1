@@ -29,7 +29,7 @@ Previous version:
 ## 3. Appearance 
 ## 3.1 Components
 From inside - Ai-Thinker Ra02 (433Mhz)
-![Easy LoRa v2 1 - inside](https://user-images.githubusercontent.com/29994971/63233300-ace3d100-c259-11e9-8989-f151fbd00a25.JPG)
+![Easy LoRa Gateway ra02 - Components](https://user-images.githubusercontent.com/29994971/105449021-0c91a780-5caa-11eb-98e5-35a089a58b1b.jpg)
 
 From inside - RFM95W (915Mhz)
 ![Easy LoRa Gateway v2 1 - RFM95W - Components](https://user-images.githubusercontent.com/29994971/104901891-90007f80-59b0-11eb-8f50-9a383154f43f.jpg)
