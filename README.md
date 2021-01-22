@@ -44,7 +44,7 @@ From bottom
 ## 4. Pin mappings
 ### 4.1 Ai-Thinker Ra02 version
 Pin mappings from main ESP32 to components
-![Easy LoRa Gateway v2 1 - Pin mapping](https://user-images.githubusercontent.com/29994971/63233171-c59fb700-c258-11e9-8842-81c59109e307.png)
+![Easy LoRa Gateway v2.1 ra02 - Pin mapping](https://user-images.githubusercontent.com/29994971/105449213-790ca680-5caa-11eb-9f6b-120f529dccaa.png)
 
 ### 4.2 RFM95W version
 Pin mappings from main ESP32 to components
