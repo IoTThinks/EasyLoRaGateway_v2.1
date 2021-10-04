@@ -52,6 +52,10 @@ Pin mappings from main ESP32 to components
 
 ![Easy LoRa Gateway v2 1 RFM95W - Pin mapping](https://user-images.githubusercontent.com/29994971/104907733-22f0e800-59b8-11eb-9b6b-f0ee3d424dfb.png)
 
+![image](https://user-images.githubusercontent.com/29994971/135783615-c5c28ce9-2213-4896-a8ed-9bcdf72f7f27.png)
+
+![image](https://user-images.githubusercontent.com/29994971/135783635-abb3be4a-df53-4a6d-b9ac-156eb8ddd2f3.png)
+
 ## 5. Pinout of MCU and LoRa
 ### 5.1 Pinout of ESP32
 Datasheet: [esp32-wroom-32_datasheet_en.pdf](https://github.com/IoTThinks/EasyLoRaGateway_v2.1/files/5829820/esp32-wroom-32_datasheet_en.pdf)
