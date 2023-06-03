@@ -2,7 +2,7 @@
 // Put all pin mappings and library here
 // ===================================================
 // Serial
-#define BAUD_RATE 115200  //9600
+#define BAUD_RATE 9600  //9600
 
 // Ethernet
 #define ETH_PHY_MDIO 0
