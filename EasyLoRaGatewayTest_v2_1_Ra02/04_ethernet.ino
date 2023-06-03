@@ -56,6 +56,11 @@ void httpGet(const char * host, uint16_t port)
   //WiFiClient client;
   if (!netClient.connect(host, port)) {
     Serial.println(" failed!!!");
+
+    if(!eth_connected)  {
+       Serial.println("[ETH] Is Ethernet cable connected?");
+    }
+    
     return;
   }
   
